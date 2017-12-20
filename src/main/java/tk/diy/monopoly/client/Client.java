@@ -9,14 +9,14 @@ import tk.diy.monopoly.Game.Options;
 import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
 import tk.diy.monopoly.common.Player;
+import tk.diy.monopoly.common.Comms;
 
 public class Client extends Common implements Runnable {
     public short port;
     public String host;
 
     private Socket socket;
-    private BufferedReader in;
-    private DataOutputStream out;
+    private Comms comms;
 
     private Player self;
 
@@ -26,52 +26,20 @@ public class Client extends Common implements Runnable {
         this.host = opts.host;
     }
 
-    private void resend() throws IOException {
-        Request req = new Request.Resend();
-        this.out.writeBytes(req.toString() + '\n');
-    }
-
-    private void ack() throws IOException {
-        Request req = new Request.Acknowledge();
-        this.out.writeBytes(req.toString() + '\n');
-    }
-
     private void send(Request request) throws IOException, Exception {
-        String msg = request.toString();
-        int cksum = msg.hashCode();
-        this.out.writeBytes(String.valueOf(cksum) + '\n');
-        this.out.writeBytes(msg + '\n');
-
-        /* check if acknowledged */
-        String resp = this.in.readLine();
-        Request response = Request.deserialize(resp);
-        if (!(response instanceof Request.Acknowledge)) {
-            Client.error(1, "no response");
-        }
+        this.comms.send(request);
     }
 
     private Request recv() throws IOException, Exception {
-        Request req = null;
-
-        while (req == null) {
-            int cksum = Integer.parseInt(this.in.readLine());
-            String msg = this.in.readLine();
-            if (msg.hashCode() == cksum) {
-                req = Request.deserialize(msg);
-                this.ack();
-            } else {
-                this.resend();
-            }
-        }
-
-        return req;
+        return this.comms.recv();
     }
 
     public void run() {
         try {
             this.socket = new Socket(this.host, this.port);
-            this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-            this.out = new DataOutputStream(this.socket.getOutputStream());
+            BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
+            this.comms = new Comms(in, out);
 
             Scanner sc = new Scanner(System.in);
             String msg = "";
@@ -91,8 +59,7 @@ public class Client extends Common implements Runnable {
                 }
             }
 
-            this.out.close();
-            this.in.close();
+            this.comms.close();
             this.socket.close();
         } catch (IOException e) {
             Client.error(1, "io error", e);
