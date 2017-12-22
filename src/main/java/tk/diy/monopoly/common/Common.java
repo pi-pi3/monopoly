@@ -41,6 +41,22 @@ public class Common {
         this.players.put(color, new Player(color, INIT_CASH));
     }
 
+    public void start() throws Exception {
+        if (this.started) {
+            throw new Exception("game already started");
+        }
+
+        this.started = true;
+    }
+
+    public void end() throws Exception {
+        if (!this.started) {
+            throw new Exception("game already enden");
+        }
+
+        this.started = false;
+    }
+
     // errors
     protected static void error(int code) {
         System.err.println("Error");
