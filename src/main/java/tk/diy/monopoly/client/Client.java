@@ -14,6 +14,7 @@ import tk.diy.monopoly.common.Protocol;
 public class Client extends Common implements Runnable {
     public short port;
     public String host;
+    public int resendLimit;
 
     private Socket socket;
     private Protocol protocol;
@@ -24,6 +25,7 @@ public class Client extends Common implements Runnable {
         super();
         this.port = opts.port;
         this.host = opts.host;
+        this.resendLimit = opts.resendLimit;
     }
 
     private void send(Request request) throws IOException, Exception {
@@ -35,11 +37,15 @@ public class Client extends Common implements Runnable {
     }
 
     public void run() {
+        short port = this.port;
+        String host = this.host;
+        int resendLimit = this.resendLimit;
+
         try {
-            this.socket = new Socket(this.host, this.port);
+            this.socket = new Socket(host, port);
             BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
-            this.protocol = new Protocol(in, out);
+            this.protocol = new Protocol(in, out, resendLimit);
 
             Scanner sc = new Scanner(System.in);
             String msg = "";
@@ -66,5 +72,21 @@ public class Client extends Common implements Runnable {
         } catch (Exception e) {
             Client.error(1, "unknown error", e);
         }
+    }
+
+    public static void error(int code) {
+        Common.error(code);
+    }
+
+    public static void error(int code, String msg) {
+        Common.error(code, msg);
+    }
+
+    public static void error(int code, String msg, Exception cause) {
+        Common.error(code, msg, cause);
+    }
+
+    public static void error(int code, String msg, Object cause) {
+        Common.error(code, msg, cause);
     }
 }

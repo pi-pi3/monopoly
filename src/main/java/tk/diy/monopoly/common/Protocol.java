@@ -4,15 +4,25 @@ package tk.diy.monopoly.common;
 import java.net.*;
 import java.io.*;
 
+import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
 
 public class Protocol {
     private BufferedReader in;
     private DataOutputStream out;
+    private int resendLimit;
+    private int resendCount;
 
     public Protocol(BufferedReader in, DataOutputStream out) {
         this.in = in;
         this.out = out;
+        this.resendLimit = Common.DEFAULT_RESEND_LIMIT;
+        this.resendCount = 0;
+    }
+
+    public Protocol(BufferedReader in, DataOutputStream out, int resendLimit) {
+        this(in, out);
+        this.resendLimit = resendLimit;
     }
 
     public void close() throws IOException {
@@ -20,12 +30,19 @@ public class Protocol {
         this.out.close();
     }
 
-    public void resend() throws IOException {
+    public void resend() throws IOException, Exception {
+        if (this.resendCount >= this.resendLimit) {
+            throw new Exception("too many resend requests");
+        }
+
+        this.resendCount++;
         Request req = new Request.Resend();
         this.out.writeBytes(req.toString() + '\n');
     }
 
     public void ack() throws IOException {
+        this.resendCount = 0;
+
         Request req = new Request.Acknowledge();
         this.out.writeBytes(req.toString() + '\n');
     }

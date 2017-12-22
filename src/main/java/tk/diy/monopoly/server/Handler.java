@@ -11,12 +11,14 @@ import tk.diy.monopoly.common.Protocol;
 public class Handler implements Runnable {
     private final Server host;
     private final Socket conn;
+    private final int resendLimit;
 
     private Protocol protocol;
 
-    public Handler(Server host, Socket conn) {
+    public Handler(Server host, Socket conn, int resendLimit) {
         this.host = host;
         this.conn = conn;
+        this.resendLimit = resendLimit;
 
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(this.conn.getInputStream()));

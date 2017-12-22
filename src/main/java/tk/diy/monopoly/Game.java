@@ -7,13 +7,16 @@ import tk.diy.monopoly.client.Client;
 
 public class Game {
     public final static String VERSION_STR = "monopoly v0.1.0";
+                                        // <<---------------------------------------------------------------------------->>
     public final static String HELP_MSG = "monopoly [OPTIONS] [HOST]\n\n" +
                                           "OPTIONS\n" +
-                                          "  -p | --port PORT Connects to PORT or listens on PORT.  Default: 1935.\n" +
-                                          "  -s | --server    Launches as a server.\n" +
-                                          "  -j | --jobs JOBS Use at most JOBS threads in a server.  Default: 10.\n" +
-                                          "  -h | --help      Prints this message and quits.\n" +
-                                          "  -v | --version   Prints version and quits.\n\n" +
+                                          "  -p | --port PORT      Connects to PORT or listens on PORT.  Default: 1935.\n" +
+                                          "  -s | --server         Launches as a server.\n" +
+                                          "  -j | --jobs JOBS      Use at most JOBS threads in a server.  Default: 10.\n" +
+                                          "       --resend-limit N Retry at most N times if a package arrives corrupted.\n" +
+                                          "                        Default: 4.\n" +
+                                          "  -h | --help           Prints this message and quits.\n" +
+                                          "  -v | --version        Prints version and quits.\n\n" +
                                           "CREDITS & LICENSE\n" +
                                           "  Made by Szymon Walter.\n" +
                                           "  This program is free software available under the zlib/libpng license.\n" +
@@ -27,6 +30,7 @@ public class Game {
             PORT,    // -p | --port
             SERVER,  // -s | --server
             THREADS, // -j | --jobs
+            RESEND,  //      --resend-limit
         }
 
         public boolean isserver;
@@ -35,12 +39,14 @@ public class Game {
         public short port;
         public String host;
         public int threads;
+        public int resendLimit;
 
         public Options() {
             this.isserver = false;
             this.port = Common.DEFAULT_PORT;
             this.host = Common.DEFAULT_HOST;
             this.threads = Common.DEFAULT_THREADS;
+            this.resendLimit = Common.DEFAULT_RESEND_LIMIT;
         }
 
         public static Options parse(String[] args) throws Exception {
@@ -72,6 +78,9 @@ public class Game {
                             case "--jobs":
                                 opt = Opt.THREADS;
                                 break;
+                            case "--resend-limit":
+                                opt = Opt.RESEND;
+                                break;
                             default:
                                 if (arg.startsWith("-")) {
                                     throw new Exception("unrecognized option \"" + arg + "\"");
@@ -90,6 +99,10 @@ public class Game {
                         opt = Opt.NONE;
                         break;
                     case SERVER:
+                        opt = Opt.NONE;
+                        break;
+                    case RESEND:
+                        opts.resendLimit = Integer.parseInt(arg);
                         opt = Opt.NONE;
                         break;
                 }

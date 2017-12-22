@@ -6,10 +6,11 @@ import java.util.HashMap;
 import tk.diy.monopoly.common.Player;
 
 public class Common {
-    public final static String VERSION = "0.1.0"; 
-    public final static short DEFAULT_PORT = 1935; 
-    public final static int DEFAULT_THREADS = 10; 
-    public final static String DEFAULT_HOST = "localhost"; 
+    public final static String VERSION = "0.1.0";
+    public final static short DEFAULT_PORT = 1935;
+    public final static int DEFAULT_THREADS = 10;
+    public final static String DEFAULT_HOST = "localhost";
+    public final static int DEFAULT_RESEND_LIMIT = 4;
 
     public final static int FIELD_COUNT = 40; 
 

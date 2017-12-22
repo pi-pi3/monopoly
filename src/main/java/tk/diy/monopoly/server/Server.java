@@ -15,6 +15,7 @@ public class Server extends Common implements Runnable {
     public short port;
     public String host;
     public int threads;
+    public int resendLimit;
 
     private ServerSocket socket;
     private ExecutorService pool;
@@ -26,6 +27,7 @@ public class Server extends Common implements Runnable {
         this.host = opts.host;
         this.threads = opts.threads;
         this.shouldShutdown = false;
+        this.resendLimit = opts.resendLimit;
     }
 
     public synchronized void shutdown() {
@@ -64,25 +66,31 @@ public class Server extends Common implements Runnable {
     }
 
     public void run() {
+        short port = this.port;
+        String host = this.host;
+        int threads = this.threads;
+        int resendLimit = this.resendLimit;
+
         InetAddress addr = null;
+
         try {
-            addr = InetAddress.getByName(this.host);
+            addr = InetAddress.getByName(host);
         } catch (UnknownHostException e) {
             Server.error(1, "unknown host", e);
         }
 
         try {
-            this.socket = new ServerSocket(this.port, 0, addr);
+            this.socket = new ServerSocket(port, 0, addr);
         } catch (IOException e) {
             Server.error(1, "io error", e);
         }
 
-        this.pool = Executors.newFixedThreadPool(this.threads);
+        this.pool = Executors.newFixedThreadPool(threads);
 
         try {
             while (true) {
                 Socket conn = this.socket.accept();
-                this.pool.execute(new Handler(this, conn));
+                this.pool.execute(new Handler(this, conn, resendLimit));
             }
         } catch (IOException e) {
             if (!this.shouldShutdown) {
@@ -91,5 +99,21 @@ public class Server extends Common implements Runnable {
         }
 
         this.terminate();
+    }
+
+    public static void error(int code) {
+        Common.error(code);
+    }
+
+    public static void error(int code, String msg) {
+        Common.error(code, msg);
+    }
+
+    public static void error(int code, String msg, Exception cause) {
+        Common.error(code, msg, cause);
+    }
+
+    public static void error(int code, String msg, Object cause) {
+        Common.error(code, msg, cause);
     }
 }
