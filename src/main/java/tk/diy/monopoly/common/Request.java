@@ -103,7 +103,7 @@ public abstract class Request {
 
         public JSONObject serializeInner() {
             JSONObject req = new JSONObject();
-            req.put("request", "join");
+            req.put("request", "join-response");
             req.put("color", this.color.toInt());
             req.put("success", this.success);
             return req;
