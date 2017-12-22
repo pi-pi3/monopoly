@@ -29,11 +29,11 @@ public class Common {
         this.started = false;
     }
 
-    public boolean hasStarted() {
+    public synchronized boolean hasStarted() {
         return this.started;
     }
 
-    public void join(Player.Color color) throws Exception {
+    public synchronized void join(Player.Color color) throws Exception {
         if (this.started) {
             throw new Exception("game already started");
         }
@@ -44,7 +44,7 @@ public class Common {
         this.players.put(color, new Player(color, INIT_CASH));
     }
 
-    public Player player(Player.Color color) throws Exception {
+    public synchronized Player player(Player.Color color) throws Exception {
         if (!this.players.containsKey(color)) {
             throw new Exception("no player of that color");
         }
@@ -52,7 +52,7 @@ public class Common {
         return this.players.get(color);
     }
 
-    public void start() throws Exception {
+    public synchronized void start() throws Exception {
         if (this.started) {
             throw new Exception("game already started");
         }
@@ -60,7 +60,7 @@ public class Common {
         this.started = true;
     }
 
-    public void end() throws Exception {
+    public synchronized void end() throws Exception {
         if (!this.started) {
             throw new Exception("game already enden");
         }

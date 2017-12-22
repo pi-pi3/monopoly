@@ -20,6 +20,7 @@ public class Server extends Common implements Runnable {
     private ServerSocket socket;
     private ExecutorService pool;
     private boolean shouldShutdown;
+    private boolean isRunning;
 
     public Server(Options opts) {
         super();
@@ -27,6 +28,7 @@ public class Server extends Common implements Runnable {
         this.host = opts.host;
         this.threads = opts.threads;
         this.shouldShutdown = false;
+        this.isRunning = false;
         this.resendLimit = opts.resendLimit;
     }
 
@@ -63,9 +65,17 @@ public class Server extends Common implements Runnable {
         } catch (IOException e) {
             Server.error(1, "io error", e);
         }
+
+        this.isRunning = false;
     }
 
     public void run() {
+        synchronized (this) {
+            if (this.isRunning) {
+                Server.error(1, "cannot run server twice");
+            }
+            this.isRunning = true;
+        }
         short port = this.port;
         String host = this.host;
         int threads = this.threads;
