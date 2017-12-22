@@ -59,6 +59,7 @@ public class Client extends Common implements Runnable {
                     Request.EchoResponse response = (Request.EchoResponse) this.recv();
                     System.out.println(response);
                 } else if (req instanceof Request.Disconnect) {
+                    this.remove(this.self.getColor());
                     break;
                 } else if (req instanceof Request.Shutdown) {
                     break;

@@ -44,6 +44,14 @@ public class Common {
         this.players.put(color, new Player(color, INIT_CASH));
     }
 
+    public synchronized Player remove(Player.Color color) throws Exception {
+        if (!this.players.containsKey(color)) {
+            throw new Exception("no player of that color");
+        }
+
+        return this.players.remove(color);
+    }
+
     public synchronized Player player(Player.Color color) throws Exception {
         if (!this.players.containsKey(color)) {
             throw new Exception("no player of that color");
