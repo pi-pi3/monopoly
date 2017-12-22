@@ -7,6 +7,7 @@ import java.io.*;
 import tk.diy.monopoly.server.Server;
 import tk.diy.monopoly.common.Request;
 import tk.diy.monopoly.common.Protocol;
+import tk.diy.monopoly.common.Player;
 
 public class Handler implements Runnable {
     private final Server host;
@@ -14,6 +15,8 @@ public class Handler implements Runnable {
     private final int resendLimit;
 
     private Protocol protocol;
+
+    private Player self;
 
     public Handler(Server host, Socket conn, int resendLimit) {
         this.host = host;
@@ -56,6 +59,7 @@ public class Handler implements Runnable {
                     if (!this.host.hasStarted()) {
                         this.host.join(((Request.Join) req).color);
                         this.send(new Request.JoinResponse(((Request.Join) req).color, true));
+                        this.self = this.host.player(((Request.Join) req).color);
                     } else {
                         this.send(new Request.JoinResponse(((Request.Join) req).color, false));
                     }

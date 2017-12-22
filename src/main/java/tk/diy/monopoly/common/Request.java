@@ -2,7 +2,6 @@
 package tk.diy.monopoly.common;
 
 import java.util.HashMap;
-import java.util.concurrent.AtomicBoolean;
 
 import org.json.JSONObject;
 

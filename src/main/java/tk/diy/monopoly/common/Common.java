@@ -37,8 +37,19 @@ public class Common {
         if (this.started) {
             throw new Exception("game already started");
         }
+        if (this.players.containsKey(color)) {
+            throw new Exception("player already in game");
+        }
 
         this.players.put(color, new Player(color, INIT_CASH));
+    }
+
+    public Player player(Player.Color color) throws Exception {
+        if (!this.players.containsKey(color)) {
+            throw new Exception("no player of that color");
+        }
+
+        return this.players.get(color);
     }
 
     public void start() throws Exception {
