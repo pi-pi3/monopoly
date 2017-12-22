@@ -74,21 +74,21 @@ public abstract class Request {
 
     // game state requests
     public static class Join extends Request {
-        public int color;
+        public Player.Color color;
 
-        public Join(int color) {
+        public Join(Player.Color color) {
             this.color = color;
         }
 
         public JSONObject serializeInner() {
             JSONObject req = new JSONObject();
             req.put("request", "join");
-            req.put("color", this.color);
+            req.put("color", this.color.toInt());
             return req;
         }
 
         public static Join deserialize(JSONObject req) throws Exception {
-            return new Join(req.getInt("color"));
+            return new Join(Player.Color.fromInt(req.getInt("color")));
         }
     }
 
