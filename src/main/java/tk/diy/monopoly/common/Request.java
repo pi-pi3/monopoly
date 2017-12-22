@@ -1,6 +1,9 @@
 
 package tk.diy.monopoly.common;
 
+import java.util.HashMap;
+import java.util.concurrent.AtomicBoolean;
+
 import org.json.JSONObject;
 
 import tk.diy.monopoly.common.Player;
@@ -213,6 +216,14 @@ public abstract class Request {
             return Disconnect.deserialize(data);
         } else if (request.equals("shutdown")) {
             return Shutdown.deserialize(data);
+        } else if (request.equals("join")) {
+            return Join.deserialize(data);
+        } else if (request.equals("join-response")) {
+            return JoinResponse.deserialize(data);
+        } else if (request.equals("start")) {
+            return Start.deserialize(data);
+        } else if (request.equals("end")) {
+            return End.deserialize(data);
         } else if (request.equals("dice")) {
             return Dice.deserialize(data);
         } else if (request.equals("buy")) {
