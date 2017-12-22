@@ -17,31 +17,31 @@ public class Common {
     protected Board board;
     protected boolean started;
 
-    public Common() {
+    protected Common() {
         this.players = new HashMap<Player.Color, Player>();
         this.board = new Board();
         this.started = false;
     }
 
-    public static void error(int code) {
+    protected static void error(int code) {
         System.err.println("Error");
         System.exit(code);
     }
 
-    public static void error(int code, String msg) {
+    protected static void error(int code, String msg) {
         System.err.print("Error: ");
         System.err.println(msg);
         System.exit(code);
     }
 
-    public static void error(int code, String msg, Exception cause) {
+    protected static void error(int code, String msg, Exception cause) {
         System.err.print("Error: ");
         System.err.println(msg);
         cause.printStackTrace();
         System.exit(code);
     }
 
-    public static void error(int code, String msg, Object cause) {
+    protected static void error(int code, String msg, Object cause) {
         System.err.print("Error: ");
         System.err.println(msg);
         System.err.println(cause);

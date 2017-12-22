@@ -6,11 +6,11 @@ import java.io.*;
 
 import tk.diy.monopoly.common.Request;
 
-public class Comms {
+public class Protocol {
     private BufferedReader in;
     private DataOutputStream out;
 
-    public Comms(BufferedReader in, DataOutputStream out) {
+    public Protocol(BufferedReader in, DataOutputStream out) {
         this.in = in;
         this.out = out;
     }

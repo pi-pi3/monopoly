@@ -6,13 +6,13 @@ import java.io.*;
 
 import tk.diy.monopoly.server.Server;
 import tk.diy.monopoly.common.Request;
-import tk.diy.monopoly.common.Comms;
+import tk.diy.monopoly.common.Protocol;
 
 public class Handler implements Runnable {
     private final Server host;
     private final Socket conn;
 
-    private Comms comms;
+    private Protocol protocol;
 
     public Handler(Server host, Socket conn) {
         this.host = host;
@@ -21,18 +21,18 @@ public class Handler implements Runnable {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(this.conn.getInputStream()));
             DataOutputStream out = new DataOutputStream(this.conn.getOutputStream());
-            this.comms = new Comms(in, out);
+            this.protocol = new Protocol(in, out);
         } catch (IOException e) {
             Server.error(1, "io", e);
         }
     }
 
     private void send(Request request) throws IOException, Exception {
-        this.comms.send(request);
+        this.protocol.send(request);
     }
 
     private Request recv() throws IOException, Exception {
-        return this.comms.recv();
+        return this.protocol.recv();
     }
 
     public void run() {
@@ -45,7 +45,7 @@ public class Handler implements Runnable {
                 } else if (req instanceof Request.Disconnect) {
                     break;
                 } else if (req instanceof Request.Shutdown) {
-                    this.comms.close();
+                    this.protocol.close();
                     this.conn.close();
                     this.host.shutdown();
                     break;

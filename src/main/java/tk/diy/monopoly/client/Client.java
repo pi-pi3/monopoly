@@ -9,14 +9,14 @@ import tk.diy.monopoly.Game.Options;
 import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
 import tk.diy.monopoly.common.Player;
-import tk.diy.monopoly.common.Comms;
+import tk.diy.monopoly.common.Protocol;
 
 public class Client extends Common implements Runnable {
     public short port;
     public String host;
 
     private Socket socket;
-    private Comms comms;
+    private Protocol protocol;
 
     private Player self;
 
@@ -27,11 +27,11 @@ public class Client extends Common implements Runnable {
     }
 
     private void send(Request request) throws IOException, Exception {
-        this.comms.send(request);
+        this.protocol.send(request);
     }
 
     private Request recv() throws IOException, Exception {
-        return this.comms.recv();
+        return this.protocol.recv();
     }
 
     public void run() {
@@ -39,7 +39,7 @@ public class Client extends Common implements Runnable {
             this.socket = new Socket(this.host, this.port);
             BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
             DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
-            this.comms = new Comms(in, out);
+            this.protocol = new Protocol(in, out);
 
             Scanner sc = new Scanner(System.in);
             String msg = "";
@@ -59,7 +59,7 @@ public class Client extends Common implements Runnable {
                 }
             }
 
-            this.comms.close();
+            this.protocol.close();
             this.socket.close();
         } catch (IOException e) {
             Client.error(1, "io error", e);
