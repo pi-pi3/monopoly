@@ -29,7 +29,15 @@ public class Common {
         this.started = false;
     }
 
-    public void join(Player.Color color) {
+    public boolean hasStarted() {
+        return this.started;
+    }
+
+    public void join(Player.Color color) throws Exception {
+        if (this.started) {
+            throw new Exception("game already started");
+        }
+
         this.players.put(color, new Player(color, INIT_CASH));
     }
 
