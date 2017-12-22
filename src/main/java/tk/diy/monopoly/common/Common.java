@@ -4,6 +4,7 @@ package tk.diy.monopoly.common;
 import java.util.HashMap;
 
 import tk.diy.monopoly.common.Player;
+import tk.diy.monopoly.common.rand.Dice;
 
 public class Common {
     public final static String VERSION = "0.1.0";
@@ -13,10 +14,14 @@ public class Common {
     public final static int DEFAULT_RESEND_LIMIT = 4;
 
     public final static int FIELD_COUNT = 40; 
+    public final static int INIT_CASH = 6000;
+    public final static int BASE_CASH = 4000;
+    public final static Dice dice = new Dice(2, 6); // 2d6
 
     protected HashMap<Player.Color, Player> players;
     protected Board board;
     protected boolean started;
+    protected int cashPool;
 
     protected Common() {
         this.players = new HashMap<Player.Color, Player>();
@@ -24,6 +29,11 @@ public class Common {
         this.started = false;
     }
 
+    public void join(Player.Color color) {
+        this.players.put(color, new Player(color, INIT_CASH));
+    }
+
+    // errors
     protected static void error(int code) {
         System.err.println("Error");
         System.exit(code);

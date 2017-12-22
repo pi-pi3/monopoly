@@ -69,11 +69,11 @@ public class Player {
     private int position;
     private int money;
 
-    public Player(Color color) {
+    public Player(Color color, int money) {
         this.color = color;
         this.owned = new ArrayList<Building>();
         this.position = 0;
-        this.money = 0;
+        this.money = money;
     }
 
     public void move(int rel) {

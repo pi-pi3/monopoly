@@ -51,6 +51,14 @@ public class Handler implements Runnable {
                     this.conn.close();
                     this.host.shutdown();
                     break;
+                // game state elements start here
+                } else if (req instanceof Request.Join) {
+                    if (!this.host.hasStarted()) {
+                        this.host.join(((Request.Join) req).color);
+                        this.send(new Request.JoinResponse(((Request.Join) req).color, true));
+                    } else {
+                        this.send(new Request.JoinResponse(((Request.Join) req).color, false));
+                    }
                 }
             }
         } catch (IOException e) {

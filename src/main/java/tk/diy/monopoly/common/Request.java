@@ -3,6 +3,8 @@ package tk.diy.monopoly.common;
 
 import org.json.JSONObject;
 
+import tk.diy.monopoly.common.Player;
+
 public abstract class Request {
     public static class Echo extends Request {
         public String message;
@@ -87,6 +89,31 @@ public abstract class Request {
 
         public static Join deserialize(JSONObject req) throws Exception {
             return new Join(req.getInt("color"));
+        }
+    }
+
+    public static class JoinResponse extends Request {
+        public Player.Color color;
+        public boolean success;
+
+        public JoinResponse(Player.Color color, boolean success) {
+            this.color = color;
+            this.success = success;
+        }
+
+        public JSONObject serializeInner() {
+            JSONObject req = new JSONObject();
+            req.put("request", "join");
+            req.put("color", this.color.toInt());
+            req.put("success", this.success);
+            return req;
+        }
+
+        public static JoinResponse deserialize(JSONObject req) throws Exception {
+            return new JoinResponse(
+                Player.Color.fromInt(req.getInt("color")),
+                req.getBoolean("success")
+            );
         }
     }
 

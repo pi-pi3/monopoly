@@ -56,12 +56,20 @@ public class Client extends Common implements Runnable {
                 this.send(req);
 
                 if (req instanceof Request.Echo) {
-                    Request response = this.recv();
+                    Request.EchoResponse response = (Request.EchoResponse) this.recv();
                     System.out.println(response);
                 } else if (req instanceof Request.Disconnect) {
                     break;
                 } else if (req instanceof Request.Shutdown) {
                     break;
+                // game state elements start here
+                } else if (req instanceof Request.Join) {
+                    Request.JoinResponse response = (Request.JoinResponse) this.recv();
+                    if (response.success) {
+                        this.join(response.color);
+                    } else {
+                        Client.error(2, "Couldn't join game. It presumably already started.");
+                    }
                 }
             }
 
