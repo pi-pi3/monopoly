@@ -62,6 +62,12 @@ public abstract class Request {
         public static Acknowledge deserialize(JSONObject req) throws Exception { return new Acknowledge(); }
     }
 
+    public static class AccessDenied extends Request {
+        private static final JSONObject req = new JSONObject("{\"request\":\"access-denied\"}");
+        public JSONObject serializeInner() { return req; }
+        public static AccessDenied deserialize(JSONObject req) throws Exception { return new AccessDenied(); }
+    }
+
     public static class Disconnect extends Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"disconnect\"}");
         public JSONObject serializeInner() { return req; }
