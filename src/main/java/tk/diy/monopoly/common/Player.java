@@ -64,7 +64,7 @@ public class Player {
         }
     }
 
-    private Color color;
+    public final Color color;
     private ArrayList<Building> owned; // TODO: serialize
     private int position;
     private int money;
