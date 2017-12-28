@@ -2,3 +2,5 @@ build/
 *.jar
 .gradle
 .*.sw?
+paper/backup
+paper/*.pdf
