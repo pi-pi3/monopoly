@@ -50,14 +50,22 @@ public class Protocol {
     public void send(Request request) throws IOException, Exception {
         String msg = request.toString();
         int cksum = msg.hashCode();
-        this.out.writeBytes(String.valueOf(cksum) + '\n');
-        this.out.writeBytes(msg + '\n');
+        Request response = null;
 
-        /* check if acknowledged */
-        String resp = this.in.readLine();
-        Request response = Request.deserialize(resp);
-        if (!(response instanceof Request.Acknowledge)) {
-            throw new Exception("no response");
+        while (response == null || response instanceof Request.Resend) {
+            this.out.writeBytes(String.valueOf(cksum) + '\n');
+            this.out.writeBytes(msg + '\n');
+
+            /* check if acknowledged */
+            String resp = this.in.readLine();
+            response = Request.deserialize(resp);
+            if (response instanceof Request.Acknowledge) {
+                return;
+            } else if (response instanceof Request.AccessDenied) {
+                throw new Exception("access denied");
+            } else {
+                throw new Exception("no response");
+            }
         }
     }
 
