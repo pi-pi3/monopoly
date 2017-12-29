@@ -16,6 +16,7 @@ public class Server extends Common implements Runnable {
     public String host;
     public int threads;
     public int resendLimit;
+    public final boolean debug;
 
     private ServerSocket socket;
     private ExecutorService pool;
@@ -30,6 +31,7 @@ public class Server extends Common implements Runnable {
         this.shouldShutdown = false;
         this.isRunning = false;
         this.resendLimit = opts.resendLimit;
+        this.debug = opts.debug;
     }
 
     public synchronized void shutdown() {

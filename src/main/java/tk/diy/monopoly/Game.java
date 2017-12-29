@@ -15,6 +15,7 @@ public class Game {
                                           "  -j | --jobs JOBS      Use at most JOBS threads in a server.  Default: 10.\n" +
                                           "       --resend-limit N Retry at most N times if a package arrives corrupted.\n" +
                                           "                        Default: 4.\n" +
+                                          "       --debug          Start server in debug mode.  Has no effect on client.\n" +
                                           "  -h | --help           Prints this message and quits.\n" +
                                           "  -v | --version        Prints version and quits.\n\n" +
                                           "CREDITS & LICENSE\n" +
@@ -27,6 +28,7 @@ public class Game {
             NONE,
             HELP,    // -h | --help
             VERSION, // -v | --version
+            DEBUG,   //      --debug
             PORT,    // -p | --port
             SERVER,  // -s | --server
             THREADS, // -j | --jobs
@@ -34,6 +36,7 @@ public class Game {
         }
 
         public boolean isserver;
+        public boolean debug;
         public boolean help;
         public boolean version;
         public short port;
@@ -61,6 +64,9 @@ public class Game {
                             case "-s":
                             case "--server":
                                 opts.isserver = true;
+                                break;
+                            case "--debug":
+                                opts.debug = true;
                                 break;
                             case "-h":
                             case "--help":
