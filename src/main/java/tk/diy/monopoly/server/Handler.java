@@ -5,6 +5,7 @@ import java.net.*;
 import java.io.*;
 
 import tk.diy.monopoly.server.Server;
+import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
 import tk.diy.monopoly.common.Protocol;
 import tk.diy.monopoly.common.Player;
@@ -57,11 +58,12 @@ public class Handler implements Runnable {
                     break;
                 // game state elements start here
                 } else if (req instanceof Request.Join) {
-                    if (!this.host.hasStarted()) {
+                    if (!this.host.hasStarted() && this.host.playerCount() >= Common.MIN_PLAYERS) {
                         this.host.join(((Request.Join) req).color);
                         this.send(new Request.JoinResponse(((Request.Join) req).color, true));
                         this.self = this.host.player(((Request.Join) req).color);
                     } else {
+                        // TODO: more elaborate fail message
                         this.send(new Request.JoinResponse(((Request.Join) req).color, false));
                     }
                 }
