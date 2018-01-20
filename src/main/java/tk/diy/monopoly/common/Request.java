@@ -87,14 +87,14 @@ public abstract class Request {
         }
 
         public static Wait deserialize(JSONObject req) throws Exception {
-            return new Wait(req.integer("timeout"));
+            return new Wait(req.getInt("timeout"));
         }
     }
 
     public static class Notify extends Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"notify\"}");
         public JSONObject serializeInner() { return req; }
-        public static Acknowledge deserialize(JSONObject req) throws Exception { return new Notify(); }
+        public static Notify deserialize(JSONObject req) throws Exception { return new Notify(); }
     }
 
     public static class NotYourTurn extends Request {
