@@ -1,0 +1,115 @@
+
+# algorithm
+
+```
+start:
+  0) Stelle deine Figur auf dem "Los"-Feld.
+  1) Bekomme 6000€ von der Bank.
+
+turn:
+  2) Bist Du der letzte Spieler, der noch nicht verloren hat?
+  3) Wenn ja, dann hast Du gewonnen. Gehe zum Schritt 64). // label win
+  4) Bist Du im Gefängnis?
+  5) Wenn ja, dann gehe zum Schritt 53) // label prison
+
+dice:
+  6) Werfe den Würfel.
+  7) Sei n die Augensumme des Würfel.
+
+move:
+  8) Laufe n Schritte nach vorne.
+  9) Sei f das Feld auf dem Du stehst.
+
+type:
+  10) Ist f eine Straße, ein Werk oder ein Bahnhof?
+  11) Wenn ja, dann gehe zum Schritt 24) // label building
+  12) Ist f ein Polizist-Feld?
+  13) Wenn ja, dann gehe zum Schritt 57) // label police
+  14) Ist f ein Parkplatz?
+  15) Wenn ja, dann gehe zum Schritt 51) // label parking
+  16) Ist f ein Gefängnis?
+  17) Wenn ja, dann gehe zum Schritt 59) // label empty
+  18) Ist f ein Gemeinschaft- oder Ereignisfeld?
+  19) Wenn ja, dann gehe zum Schritt 59) // label empty
+  20) Ist f ein "Los"-Feld?
+  21) Wenn ja, dann bekomme 6000€ von der Bank.
+  22) Wenn nein, aber Du das "Los"-Feld überschritten hast, dann bekomme 4000€
+     von der Bank.
+  23) Gehe zum Schritt 60) // label end-turn
+
+building:
+  24) Hat f einen Besitzer?
+  25) Wenn ja, dann gehe zum Schritt 27). // label has-owner
+  26) Im anderen Fall, gehe zum Schritt 46). // label buy
+
+has-owner:
+  27) Ist f deine Straße und Du möchtest Häuser bauen?
+  28) Wenn ja, gehe zum Schritt 38) // label upgrade
+  29) Ist f deine Straße, Werk oder Bahnhof und Du möchtest sie verkaufen?
+  30) Wenn ja, gehe zum Schritt 44) // label sell
+  31) Sei b der Spieler, dem die Straße, Werk oder Bahnhof gehört.
+  32) Sei x die Miete die Du laut der Feldkarte zahlen musst.
+  33) Bei einer Straße hängt die Miete von den Häusern und Hotels die auf dem
+     Feld stehen.
+  34) Bei einem Bahnhof hängt die Miete von der Anzahl der Werke, die der
+     Besitzer besitzt.
+  35) Bei einem Werk hängt die Miete von der Augensumme des Würfelwurfes ab und
+     von der Anzahl der Werke, die der Besitzer besitzt.
+  36) Zahle x Monopoly-Dollar an b.
+  37) Gehe zum Schritt 60). // label end-turn
+
+upgrade:
+  38) Steht auf der Straße ein Hotel?
+  39) Wenn ja, dann gehe zum Schritt 60). // label end-turn
+  40) Sind auf der Straße bereits 4 Häuser?
+  41) Wenn ja, dann zahle den Preis eines Hotels, nehme alle Häuser vom Feld weg
+     und stelle dort eine Hotel-Figur.
+  42) Im anderen fall zahle den Preis des nächsten Hauses und stelle auf dem Feld
+     eine Haus-Figur.
+  43) Gehe zum Schritt 60). // label end-turn
+
+sell:
+  44) Gebe die Straße, den Bahnhof oder das Werk sowie alle Häuser an diesem Feld
+     an die Bank. Bekomme den halben Wert aller Häuser und des Feldes von der
+     Bank.
+  45) Gehe zum Schritt 60). // label end-turn
+
+buy:
+  46) Zahle den Preis der Straße, des Bahnhofes oder des Werkes an die Bank.
+  47) Bekomme die dazugehörige Feldkarte.
+  48) Gehe zum Schritt 60). // label end-turn
+
+tax:
+  49) Zahle die Steuersumme in den Steuertopf.
+  50) Gehe zum Schritt 60). // label end-turn
+
+parking:
+  51) Erhalte den gesamten Inhalt des Steuertopfes.
+  52) Gehe zum Schritt 60). // label end-turn
+
+prison:
+  53) Sei n die Anzahl der Runden, die Du im Gefängnis vereits bist.
+  54) Ist n gleich als 3?
+  55) Wenn ja, gehe zum Schritt 6). Du bist nicht mehr im Gefängnis. // label dice
+  56) Im anderen Fall erhöhe n um 1 und gehe zum Schritt 60). // label end-turn
+
+police:
+  57) Bewege deine Figur ins Gefängnis. Du bist nun im Gefängnis.
+  58) Gehe zum Schritt 60). // label end-turn
+
+empty:
+  59) Gehe zum Schritt 60). // label end-turn
+
+end-turn:
+  60) Hast Du in diesem Zug dein gesamtes Geld verloren, und konntest eine Miete,
+     eine Strafe, oder Ähliches nicht zahlen?
+  61) Wenn ja, dann hast Du verloren und kannst nicht mehr spielen. Gebe alle
+     deine Straßen, Häuser und Hotels an die Bank.
+  62) Gib die Würfeln dem nächsten Spieler.
+  63) Der nächste Spieler fängt mit Schritt 2) an. // label turn
+
+win:
+  64) Bedanke sich bei deinen Mitspielern für ein gutes und nettes Spiel.
+  65) Schüttele deinen Mitspielern die Hand.
+  66) Räume das Spiel zusammen mit deinen Mitspielern weg.
+```
