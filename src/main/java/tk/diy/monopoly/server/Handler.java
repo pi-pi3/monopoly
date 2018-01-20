@@ -71,6 +71,11 @@ public class Handler implements Runnable {
                         // TODO: more elaborate fail message
                         this.send(new Request.JoinResponse(((Request.Join) req).color, false));
                     }
+                } else if (req instanceof Request.Move) {
+                    // TODO: game started validation
+                    int count = Server.dice.rand();
+                    this.self.move(count);
+                    this.send(new Request.MoveResponse(count));
                 }
             }
         } catch (IOException e) {

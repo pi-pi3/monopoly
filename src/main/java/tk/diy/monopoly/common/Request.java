@@ -219,26 +219,34 @@ public abstract class Request {
         public boolean turnRequired() { return false; }
     }
 
-    public static class Dice extends Request {
+    public static class Move extends Request {
+        private static final JSONObject req = new JSONObject("{\"request\":\"move\"}");
+        public JSONObject serializeInner() { return req; }
+        public static Move deserialize(JSONObject req) throws Exception { return new Move(); }
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return true; }
+    }
+
+    public static class MoveResponse extends Request {
         public int count;
 
-        public Dice(int count) {
+        public MoveResponse(int count) {
             this.count = count;
         }
 
         public JSONObject serializeInner() {
             JSONObject req = new JSONObject();
-            req.put("request", "dice");
+            req.put("request", "move");
             req.put("count", this.count);
             return req;
         }
 
-        public static Dice deserialize(JSONObject req) throws Exception {
-            return new Dice(req.getInt("count"));
+        public static MoveResponse deserialize(JSONObject req) throws Exception {
+            return new MoveResponse(req.getInt("count"));
         }
 
         public boolean rootRequired() { return false; }
-        public boolean turnRequired() { return true; }
+        public boolean turnRequired() { return false; }
     }
 
     public static class Buy extends Request {
@@ -322,8 +330,8 @@ public abstract class Request {
             return Start.deserialize(data);
         } else if (request.equals("end")) {
             return End.deserialize(data);
-        } else if (request.equals("dice")) {
-            return Dice.deserialize(data);
+        } else if (request.equals("move")) {
+            return Move.deserialize(data);
         } else if (request.equals("buy")) {
             return Buy.deserialize(data);
         } else if (request.equals("build")) {

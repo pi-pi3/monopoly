@@ -72,6 +72,12 @@ public class Client extends Common implements Runnable {
                         } else {
                             Client.error(2, "Couldn't join game. It presumably already started.");
                         }
+                    } else if (req instanceof Request.Move) {
+                        Request.MoveResponse response = (Request.MoveResponse) this.recv();
+                        int count = response.count;
+                        this.self.move(count);
+                        // TODO: field interaction
+                        // i.e. buy building, prison, nothing, etc.
                     }
                 } else if (resp instanceof Request.NotYourTurn) {
                     System.err.println("It's not your turn now. Please wait.");
