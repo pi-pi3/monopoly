@@ -97,6 +97,25 @@ public abstract class Request {
         public static Acknowledge deserialize(JSONObject req) throws Exception { return new Notify(); }
     }
 
+    public static class NotYourTurn extends Request {
+        public Player.Color currentPlayer;
+
+        public NotYourTurn(Player.Color currentPlayer) {
+            this.currentPlayer = currentPlayer;
+        }
+
+        public JSONObject serializeInner() {
+            JSONObject req = new JSONObject();
+            req.put("request", "not-your-turn");
+            req.put("current-player", this.currentPlayer.toInt());
+            return req;
+        }
+
+        public static NotYourTurn deserialize(JSONObject req) throws Exception {
+            return new NotYourTurn(Player.Color.fromInt(req.getInt("current-player")));
+        }
+    }
+
     public static class Disconnect extends Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"disconnect\"}");
         public JSONObject serializeInner() { return req; }

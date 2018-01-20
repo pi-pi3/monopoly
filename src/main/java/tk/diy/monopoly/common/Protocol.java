@@ -47,7 +47,15 @@ public class Protocol {
         this.out.writeBytes(req.toString() + '\n');
     }
 
-    public void send(Request request) throws IOException, Exception {
+    public Request notYourTurn(Player.Color currentPlayer) throws IOException {
+        this.resendCount = 0;
+
+        Request req = new Request.NotYourTurn(currentPlayer);
+        this.out.writeBytes(req.toString() + '\n');
+        return req;
+    }
+
+    public Request send(Request request) throws IOException, Exception {
         String msg = request.toString();
         int cksum = msg.hashCode();
         Request response = null;
@@ -60,7 +68,7 @@ public class Protocol {
             String resp = this.in.readLine();
             response = Request.deserialize(resp);
             if (response instanceof Request.Acknowledge) {
-                return;
+                return response;
             } else if (response instanceof Request.AccessDenied) {
                 throw new Exception("access denied");
             } else if (response instanceof Request.Wait) {
@@ -68,21 +76,33 @@ public class Protocol {
                 Request notify = this.recv();
                 if (notify instanceof Request.Notify) {
                     // proceed without error
-                    return;
+                    return new Request.Acknowledge();
                 }
                 throw new Exception("response is not Notify");
+            } else if (response instanceof Request.NotYourTurn) {
+                return response;
             } else {
                 throw new Exception("no response");
             }
         }
+
+        // should be unreachable
+        return null;
     }
 
     public Request recv() throws IOException, Exception {
+        return this.recv(true, null);
+    }
+
+    public Request recv(boolean myTurn, Player.Color currentPlayer) throws IOException, Exception {
         Request req = null;
 
         while (req == null) {
             int cksum = Integer.parseInt(this.in.readLine());
             String msg = this.in.readLine();
+            if (!myTurn) {
+                return this.notYourTurn(currentPlayer);
+            }
             if (msg.hashCode() == cksum) {
                 req = Request.deserialize(msg);
                 this.ack();

@@ -33,12 +33,12 @@ public class Handler implements Runnable {
         }
     }
 
-    private void send(Request request) throws IOException, Exception {
-        this.protocol.send(request);
+    private Request send(Request request) throws IOException, Exception {
+        return this.protocol.send(request);
     }
 
     private Request recv() throws IOException, Exception {
-        return this.protocol.recv();
+        return this.protocol.recv(this.host.currentPlayer() == this.self.color, this.host.currentPlayer());
     }
 
     public void run() {

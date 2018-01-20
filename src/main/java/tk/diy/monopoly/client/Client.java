@@ -28,8 +28,8 @@ public class Client extends Common implements Runnable {
         this.resendLimit = opts.resendLimit;
     }
 
-    private void send(Request request) throws IOException, Exception {
-        this.protocol.send(request);
+    private Request send(Request request) throws IOException, Exception {
+        return this.protocol.send(request);
     }
 
     private Request recv() throws IOException, Exception {
@@ -53,25 +53,30 @@ public class Client extends Common implements Runnable {
             while (!msg.equals(null)) {
                 msg = sc.nextLine();
                 Request req = Request.deserialize(msg);
-                this.send(req);
-
-                if (req instanceof Request.Echo) {
-                    Request.EchoResponse response = (Request.EchoResponse) this.recv();
-                    System.out.println(response);
-                } else if (req instanceof Request.Disconnect) {
-                    this.remove(this.self.color);
-                    break;
-                } else if (req instanceof Request.Shutdown) {
-                    break;
-                // game state elements start here
-                } else if (req instanceof Request.Join) {
-                    Request.JoinResponse response = (Request.JoinResponse) this.recv();
-                    if (response.success) {
-                        this.join(response.color);
-                        this.self = this.player(((Request.Join) req).color);
-                    } else {
-                        Client.error(2, "Couldn't join game. It presumably already started.");
+                Request resp = this.send(req);
+                if (resp instanceof Request.Acknowledge) {
+                    if (req instanceof Request.Echo) {
+                        Request.EchoResponse response = (Request.EchoResponse) this.recv();
+                        System.out.println(response);
+                    } else if (req instanceof Request.Disconnect) {
+                        this.remove(this.self.color);
+                        break;
+                    } else if (req instanceof Request.Shutdown) {
+                        break;
+                    // game state elements start here
+                    } else if (req instanceof Request.Join) {
+                        Request.JoinResponse response = (Request.JoinResponse) this.recv();
+                        if (response.success) {
+                            this.join(response.color);
+                            this.self = this.player(((Request.Join) req).color);
+                        } else {
+                            Client.error(2, "Couldn't join game. It presumably already started.");
+                        }
                     }
+                } else if (resp instanceof Request.NotYourTurn) {
+                    System.err.println("It's not your turn now. Please wait.");
+                } else {
+                    throw new Exception("unknown exception");
                 }
             }
 

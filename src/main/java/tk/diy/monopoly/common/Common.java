@@ -20,6 +20,7 @@ public class Common {
     public final static Dice dice = new Dice(2, 6); // 2d6
 
     protected HashMap<Player.Color, Player> players;
+    protected Player.Color currentPlayer;
     protected Board board;
     protected boolean started;
     protected int cashPool;
@@ -51,6 +52,18 @@ public class Common {
         }
 
         return this.players.remove(color);
+    }
+
+    public synchronized Player.Color currentPlayer() {
+        return this.currentPlayer;
+    }
+
+    public synchronized void setPlayer(Player.Color next) {
+        this.currentPlayer = next;
+    }
+
+    public synchronized Player player() {
+        return this.players.get(this.currentPlayer);
     }
 
     public synchronized Player player(Player.Color color) throws Exception {
