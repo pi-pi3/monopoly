@@ -140,7 +140,7 @@ public abstract class Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"disconnect\"}");
         public JSONObject serializeInner() { return req; }
         public static Disconnect deserialize(JSONObject req) throws Exception { return new Disconnect(); }
-        public boolean rootRequired() { return true; }
+        public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
     }
 
