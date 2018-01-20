@@ -63,6 +63,14 @@ public class Protocol {
                 return;
             } else if (response instanceof Request.AccessDenied) {
                 throw new Exception("access denied");
+            } else if (response instanceof Request.Wait) {
+                int timeout = ((Request.Wait) response).timeout; // TODO
+                Request notify = this.recv();
+                if (notify instanceof Request.Notify) {
+                    // proceed without error
+                    return;
+                }
+                throw new Exception("response is not Notify");
             } else {
                 throw new Exception("no response");
             }

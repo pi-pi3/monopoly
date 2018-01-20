@@ -68,6 +68,35 @@ public abstract class Request {
         public static AccessDenied deserialize(JSONObject req) throws Exception { return new AccessDenied(); }
     }
 
+    public static class Wait extends Request {
+        public int timeout; // In milliseconds. Infinite if -1
+
+        public Wait() {
+            this(-1);
+        }
+
+        public Wait(int timeout) {
+            this.timeout = timeout;
+        }
+
+        public JSONObject serializeInner() {
+            JSONObject req = new JSONObject();
+            req.put("request", "wait");
+            req.put("timeout", this.timeout);
+            return req;
+        }
+
+        public static Wait deserialize(JSONObject req) throws Exception {
+            return new Wait(req.integer("timeout"));
+        }
+    }
+
+    public static class Notify extends Request {
+        private static final JSONObject req = new JSONObject("{\"request\":\"notify\"}");
+        public JSONObject serializeInner() { return req; }
+        public static Acknowledge deserialize(JSONObject req) throws Exception { return new Notify(); }
+    }
+
     public static class Disconnect extends Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"disconnect\"}");
         public JSONObject serializeInner() { return req; }
