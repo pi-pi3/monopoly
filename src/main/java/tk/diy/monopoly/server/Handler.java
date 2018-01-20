@@ -18,11 +18,13 @@ public class Handler implements Runnable {
     private Protocol protocol;
 
     private Player self;
+    private boolean root;
 
     public Handler(Server host, Socket conn, int resendLimit) {
         this.host = host;
         this.conn = conn;
         this.resendLimit = resendLimit;
+        this.root = false; // TODO
 
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(this.conn.getInputStream()));
@@ -38,7 +40,7 @@ public class Handler implements Runnable {
     }
 
     private Request recv() throws IOException, Exception {
-        return this.protocol.recv(this.host.currentPlayer() == this.self.color, this.host.currentPlayer());
+        return this.protocol.recv(this.root, this.host.currentPlayer() == this.self.color, this.host.currentPlayer());
     }
 
     public void run() {

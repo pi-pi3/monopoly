@@ -55,6 +55,14 @@ public class Protocol {
         return req;
     }
 
+    public Request accessDenied() throws IOException {
+        this.resendCount = 0;
+
+        Request req = new Request.AccessDenied();
+        this.out.writeBytes(req.toString() + '\n');
+        return req;
+    }
+
     public Request send(Request request) throws IOException, Exception {
         String msg = request.toString();
         int cksum = msg.hashCode();
@@ -90,21 +98,37 @@ public class Protocol {
         return null;
     }
 
-    public Request recv() throws IOException, Exception {
-        return this.recv(true, null);
-    }
-
-    public Request recv(boolean myTurn, Player.Color currentPlayer) throws IOException, Exception {
+    private Request recv() throws IOException, Exception {
         Request req = null;
 
         while (req == null) {
             int cksum = Integer.parseInt(this.in.readLine());
             String msg = this.in.readLine();
-            if (!myTurn) {
-                return this.notYourTurn(currentPlayer);
-            }
             if (msg.hashCode() == cksum) {
                 req = Request.deserialize(msg);
+                this.ack();
+            } else {
+                this.resend();
+            }
+        }
+
+        return req;
+    }
+
+    public Request recv(boolean isRoot, boolean myTurn, Player.Color currentPlayer) throws IOException, Exception {
+        Request req = null;
+
+        while (req == null) {
+            int cksum = Integer.parseInt(this.in.readLine());
+            String msg = this.in.readLine();
+            if (msg.hashCode() == cksum) {
+                req = Request.deserialize(msg);
+                if (req.rootRequired() && !isRoot) {
+                    return this.accessDenied();
+                }
+                if (req.turnRequired() && !myTurn) {
+                    return this.notYourTurn(currentPlayer);
+                }
                 this.ack();
             } else {
                 this.resend();
