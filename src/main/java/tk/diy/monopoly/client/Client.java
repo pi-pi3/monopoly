@@ -57,7 +57,16 @@ public class Client extends Common implements Runnable {
                 if (resp instanceof Request.Acknowledge) {
                     if (req instanceof Request.Echo) {
                         Request.EchoResponse response = (Request.EchoResponse) this.recv();
-                        System.out.println(response);
+                        long ping = this.protocol.getPing();
+                        if (ping == 0) {
+                            System.out.println("ping < 1ms");
+                        } else {
+                            System.out.println("ping: " + ping + "ms");
+                        }
+                        String msg = response.message;
+                        if (msg != null && msg.length() > 0) {
+                            System.out.println(msg);
+                        }
                     } else if (req instanceof Request.Disconnect) {
                         this.remove(this.self.color);
                         break;

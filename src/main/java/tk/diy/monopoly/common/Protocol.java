@@ -12,6 +12,7 @@ public class Protocol {
     private DataOutputStream out;
     private int resendLimit;
     private int resendCount;
+    private long ping;
 
     public Protocol(BufferedReader in, DataOutputStream out) {
         this.in = in;
@@ -23,6 +24,10 @@ public class Protocol {
     public Protocol(BufferedReader in, DataOutputStream out, int resendLimit) {
         this(in, out);
         this.resendLimit = resendLimit;
+    }
+
+    public long getPing() {
+        return this.ping;
     }
 
     public void close() throws IOException {
@@ -64,6 +69,8 @@ public class Protocol {
     }
 
     public Request send(Request request) throws IOException, Exception {
+        long t0 = System.currentTimeMillis();
+
         String msg = request.toString();
         int cksum = msg.hashCode();
         Request response = null;
@@ -74,9 +81,10 @@ public class Protocol {
 
             /* check if acknowledged */
             String resp = this.in.readLine();
+
             response = Request.deserialize(resp);
             if (response instanceof Request.Acknowledge) {
-                return response;
+                // do nothing
             } else if (response instanceof Request.AccessDenied) {
                 throw new Exception("access denied");
             } else if (response instanceof Request.Wait) {
@@ -84,18 +92,21 @@ public class Protocol {
                 Request notify = this.recv();
                 if (notify instanceof Request.Notify) {
                     // proceed without error
-                    return new Request.Acknowledge();
+                    response = new Request.Acknowledge();
+                    break;
                 }
                 throw new Exception("response is not Notify");
             } else if (response instanceof Request.NotYourTurn) {
-                return response;
+                // do nothing
             } else {
                 throw new Exception("no response");
             }
         }
 
-        // should be unreachable
-        return null;
+        long t1 = System.currentTimeMillis();
+        this.ping = t1 - t0;
+
+        return response;
     }
 
     private Request recv() throws IOException, Exception {
