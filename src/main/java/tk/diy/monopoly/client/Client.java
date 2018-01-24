@@ -1,6 +1,7 @@
 
 package tk.diy.monopoly.client;
 
+import java.util.Optional;
 import java.util.Scanner;
 import java.net.*;
 import java.io.*;
@@ -47,13 +48,24 @@ public class Client extends Common implements Runnable {
             DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
             this.protocol = new Protocol(in, out, resendLimit);
 
-            Scanner sc = new Scanner(System.in);
-            String msg = "";
+            Shell sh = new Shell("> ", System.in);
+            Optional<Request> request = Optional.empty();
 
-            while (!msg.equals(null)) {
-                msg = sc.nextLine();
-                Request req = Request.deserialize(msg);
+            while (!sh.quitEh()) {
+                Request req;
+
+                while (!request.isPresent()) {
+                    try {
+                        request = sh.nextRequest();
+                    } catch (Exception e) {
+                        System.err.println("an error occured while parsing input: ");
+                        System.err.println(e);
+                    }
+                }
+
+                req = request.get();
                 Request resp = this.send(req);
+
                 if (resp instanceof Request.Acknowledge) {
                     if (req instanceof Request.Echo) {
                         Request.EchoResponse response = (Request.EchoResponse) this.recv();
