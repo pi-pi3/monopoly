@@ -3,7 +3,6 @@ package tk.diy.monopoly.client;
 
 import java.io.*;
 import java.util.Optional;
-import java.util.regex.*;
 import java.util.ArrayList;
 
 import tk.diy.monopoly.common.Request;
@@ -14,9 +13,6 @@ public class Shell {
     private boolean shouldClose;
     private boolean closedEh;
     private boolean quitEh;
-
-    private final static Pattern arg0 = Pattern.compile("^(?<=\\p{Blank}*)([a-zA-Z_]\\w*)");
-    private final static Pattern argv = Pattern.compile("(\\S+)");
 
     public Shell(InputStream in) {
         this(null, in, true);
@@ -77,23 +73,11 @@ public class Shell {
         }
 
         String line = this.nextLine();
-        Matcher matcher = Shell.arg0.matcher(line);
-        if (!matcher.matches()) {
-            throw new Exception("invalid command: " + line);
-        }
+        String[] args = line.split("[ \t]");
+        String arg0 = args[0];
 
-        String arg0 = matcher.group(0);
-        String[] argv = new String[0];
-        matcher.reset();
-        matcher.usePattern(Shell.argv);
-
-        if (matcher.matches()) {
-            int count = matcher.groupCount() - 1;
-            argv = new String[count];
-            for (int i = 0; i < count; i++) {
-                argv[i] = matcher.group(i+1);
-            }
-        }
+        String[] argv = new String[args.length-1];
+        System.arraycopy(args, 1, argv, 0, argv.length);
 
         return this.parse(arg0, argv);
     }
@@ -107,6 +91,7 @@ public class Shell {
                     for (int i = 1; i < argv.length; i++) {
                         mbuilder.append(argv[i]);
                     }
+                    message = mbuilder.toString();
                 }
                 return new Request.Echo(message);
             default:
