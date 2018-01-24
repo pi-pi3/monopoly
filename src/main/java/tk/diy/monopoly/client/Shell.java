@@ -71,7 +71,7 @@ public class Shell {
         return line.toString();
     }
 
-    public Command nextCommand() throws IOException, Exception {
+    public Request nextRequest() throws IOException, Exception {
         if (this.quitEh) {
             return null;
         }
@@ -83,28 +83,31 @@ public class Shell {
         }
 
         String arg0 = matcher.group(0);
+        String[] argv = new String[0];
         matcher.reset();
-        matcher.usePattern(argv);
+        matcher.usePattern(Shell.argv);
 
         if (matcher.matches()) {
             int count = matcher.groupCount() - 1;
-            String[] argv = new String[count];
+            argv = new String[count];
             for (int i = 0; i < count; i++) {
                 argv[i] = matcher.group(i+1);
             }
-            return Command.parse(arg0, argv);
-        } else {
-            return Command.parse(arg0);
-        }
-    }
-
-    public Optional<Request> nextRequest() throws IOException, Exception {
-        if (this.quitEh) {
-            return Optional.empty();
         }
 
-        Command command = this.nextCommand();
-        return command.execute();
+        switch (arg0) {
+            case "echo":
+                String message = null;
+                if (argv.length > 0) {
+                    StringBuilder mbuilder = new StringBuilder(argv[0]);
+                    for (int i = 1; i < argv.length; i++) {
+                        mbuilder.append(argv[i]);
+                    }
+                }
+                return new Request.Echo(message);
+            default:
+                throw new Exception("invalid command: " + arg0);
+        }
     }
 
     public void quit() {

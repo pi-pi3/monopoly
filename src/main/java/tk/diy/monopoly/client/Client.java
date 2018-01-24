@@ -48,22 +48,10 @@ public class Client extends Common implements Runnable {
             DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
             this.protocol = new Protocol(in, out, resendLimit);
 
-            Shell sh = new Shell("> ", System.in);
-            Optional<Request> request = Optional.empty();
+            Shell sh = new Shell("> ", System.in, false);
 
             while (!sh.quitEh()) {
-                Request req;
-
-                while (!request.isPresent()) {
-                    try {
-                        request = sh.nextRequest();
-                    } catch (Exception e) {
-                        System.err.println("an error occured while parsing input: ");
-                        System.err.println(e);
-                    }
-                }
-
-                req = request.get();
+                Request req = sh.nextRequest();
                 Request resp = this.send(req);
 
                 if (resp instanceof Request.Acknowledge) {
@@ -98,6 +86,7 @@ public class Client extends Common implements Runnable {
                 }
             }
 
+            sh.quit();
             this.protocol.close();
             this.socket.close();
         } catch (IOException e) {
