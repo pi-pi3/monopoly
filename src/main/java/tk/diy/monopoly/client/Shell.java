@@ -82,6 +82,7 @@ public class Shell {
         return this.parse(arg0, argv);
     }
     
+    // TODO: add the entire rest
     private Request parse(String arg0, String[] argv) throws Exception {
         switch (arg0) {
             case "echo": // echo [message...]
