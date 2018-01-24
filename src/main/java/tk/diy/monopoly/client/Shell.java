@@ -85,14 +85,7 @@ public class Shell {
     private Request parse(String arg0, String[] argv) throws Exception {
         switch (arg0) {
             case "echo": // echo [message...]
-                String message = null;
-                if (argv.length > 0) {
-                    StringBuilder mbuilder = new StringBuilder(argv[0]);
-                    for (int i = 1; i < argv.length; i++) {
-                        mbuilder.append(argv[i]);
-                    }
-                    message = mbuilder.toString();
-                }
+                String message = String.join(" ", argv);
                 return new Request.Echo(message);
             default:
                 throw new Exception("invalid command: " + arg0);
