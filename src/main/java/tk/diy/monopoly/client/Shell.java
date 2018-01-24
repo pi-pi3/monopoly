@@ -40,7 +40,7 @@ public class Shell {
         }
 
         StringBuilder line = new StringBuilder();
-        this.ps1.ifPresent((String ps1) -> System.out.println(ps1));
+        this.ps1.ifPresent((String ps1) -> System.out.print(ps1));
         boolean backslash = false;
         while (true) {
             int b = this.in.read();
