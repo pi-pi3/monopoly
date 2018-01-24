@@ -1,5 +1,5 @@
 
-SRC=$(wildcard ./src/main/java/**/*.java)
+SRC=$(shell echo ./src/main/java/**/*.java) # for some reason wildcard isn't working
 
 default: monopoly.jar
 
