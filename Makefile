@@ -1,25 +1,20 @@
 
 SRC=$(wildcard ./src/main/java/**/*.java)
 
-default: all
+default: monopoly.jar
 
-run: client
-
-client: all
+client: monopoly.jar
 	java -jar monopoly.jar
 
-server: all
+server: monopoly.jar
 	java -jar monopoly.jar -s
 
-all:
-	@echo " * Building shadowJar * "
-	@$(MAKE) shadowJar
+monopoly.jar: build/libs/monopoly-all.jar
 	@cp build/libs/monopoly-all.jar ./monopoly.jar
-	@echo " * Done * "
 
-shadowJar: $(SRC) ./gradlew
+build/libs/monopoly-all.jar: $(SRC) ./gradlew
 	@./gradlew shadowJar
 
 clean: ./gradlew
 	@./gradlew clean
-	@rm -rf monopoly.jar
+	@rm -f monopoly.jar
