@@ -95,8 +95,12 @@ public class Shell {
             }
         }
 
+        return this.parse(arg0, argv);
+    }
+    
+    private Request parse(String arg0, String[] argv) throws Exception {
         switch (arg0) {
-            case "echo":
+            case "echo": // echo [message...]
                 String message = null;
                 if (argv.length > 0) {
                     StringBuilder mbuilder = new StringBuilder(argv[0]);
