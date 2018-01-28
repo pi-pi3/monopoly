@@ -56,7 +56,9 @@ public class Handler implements Runnable {
                 if (req instanceof Request.Echo) {
                     this.send(new Request.EchoResponse(((Request.Echo) req).message));
                 } else if (req instanceof Request.Disconnect) {
-                    this.host.remove(this.self.color);
+                    if (this.self != null) {
+                        this.host.remove(this.self.color);
+                    }
                     break;
                 } else if (req instanceof Request.Shutdown) {
                     this.protocol.close();

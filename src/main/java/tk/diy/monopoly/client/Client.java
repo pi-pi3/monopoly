@@ -68,7 +68,9 @@ public class Client extends Common implements Runnable {
                             System.out.println(msg);
                         }
                     } else if (req instanceof Request.Disconnect) {
-                        this.remove(this.self.color);
+                        if (this.self != null) {
+                            this.remove(this.self.color);
+                        }
                         break;
                     } else if (req instanceof Request.Shutdown) {
                         break;
