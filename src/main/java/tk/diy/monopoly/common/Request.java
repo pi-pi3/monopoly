@@ -316,7 +316,7 @@ public abstract class Request {
 
         public JSONObject serializeInner() {
             JSONObject req = new JSONObject();
-            req.put("request", "move");
+            req.put("request", "move-response");
             req.put("count", this.count);
             return req;
         }
