@@ -83,6 +83,20 @@ public class Client extends Common implements Runnable {
                         } else {
                             Client.warn("Couldn't join game. It presumably already started.");
                         }
+                    } else if (req instanceof Request.Start) {
+                        Request.StartResponse response = (Request.StartResponse) this.recv();
+                        if (response.success) {
+                            this.start();
+                        } else {
+                            Client.warn("Couldn't start game.");
+                        }
+                    } else if (req instanceof Request.End) {
+                        Request.EndResponse response = (Request.EndResponse) this.recv();
+                        if (response.success) {
+                            this.end();
+                        } else {
+                            Client.warn("Couldn't end game.");
+                        }
                     } else if (req instanceof Request.Move) {
                         Request.MoveResponse response = (Request.MoveResponse) this.recv();
                         int count = response.count;
@@ -92,8 +106,12 @@ public class Client extends Common implements Runnable {
                     }
                 } else if (resp instanceof Request.NotYourTurn) {
                     Client.warn("It's not your turn now. Please wait.");
+                } else if (resp instanceof Request.GameStarted) {
+                    Client.warn("Cannot do that. The game has already started.");
+                } else if (resp instanceof Request.GameNotStarted) {
+                    Client.warn("Cannot do that. The game has not started yet.");
                 } else {
-                    throw new Exception("unknown exception");
+                    throw new Exception("unimplemented request");
                 }
             }
 

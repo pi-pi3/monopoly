@@ -67,19 +67,21 @@ public class Handler implements Runnable {
                     break;
                 // game state elements start here
                 } else if (req instanceof Request.Join) {
-                    if (!this.host.hasStarted()) {
-                        this.host.join(((Request.Join) req).color);
-                        this.send(new Request.JoinResponse(((Request.Join) req).color, true));
-                        this.self = this.host.player(((Request.Join) req).color);
-                    } else {
-                        // TODO: more elaborate fail message
-                        this.send(new Request.JoinResponse(((Request.Join) req).color, false));
-                    }
+                    this.host.join(((Request.Join) req).color);
+                    this.self = this.host.player(((Request.Join) req).color);
+                    this.send(new Request.JoinResponse(((Request.Join) req).color, true));
+                } else if (req instanceof Request.Start) {
+                    this.host.start();
+                    this.send(new Request.StartResponse(true));
+                } else if (req instanceof Request.End) {
+                    this.host.end();
+                    this.send(new Request.EndResponse(true));
                 } else if (req instanceof Request.Move) {
-                    // TODO: game started validation
                     int count = Server.dice.rand();
                     this.self.move(count);
                     this.send(new Request.MoveResponse(count));
+                } else {
+                    throw new Exception("unimplemented request");
                 }
             }
         } catch (IOException e) {

@@ -243,6 +243,29 @@ public abstract class Request {
         public GameState stateRequired() { return GameState.NOT_STARTED; }
     }
 
+    public static class StartResponse extends Request {
+        public boolean success;
+
+        public StartResponse(boolean success) {
+            this.success = success;
+        }
+
+        public JSONObject serializeInner() {
+            JSONObject req = new JSONObject();
+            req.put("request", "start-response");
+            req.put("success", this.success);
+            return req;
+        }
+
+        public static StartResponse deserialize(JSONObject req) throws Exception {
+            return new StartResponse(req.getBoolean("success"));
+        }
+
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
+    }
+
     public static class End extends Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"end\"}");
         public JSONObject serializeInner() { return req; }
@@ -250,6 +273,29 @@ public abstract class Request {
         public boolean rootRequired() { return true; }
         public boolean turnRequired() { return false; }
         public GameState stateRequired() { return GameState.STARTED; }
+    }
+
+    public static class EndResponse extends Request {
+        public boolean success;
+
+        public EndResponse(boolean success) {
+            this.success = success;
+        }
+
+        public JSONObject serializeInner() {
+            JSONObject req = new JSONObject();
+            req.put("request", "end-response");
+            req.put("success", this.success);
+            return req;
+        }
+
+        public static EndResponse deserialize(JSONObject req) throws Exception {
+            return new EndResponse(req.getBoolean("success"));
+        }
+
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Move extends Request {
@@ -378,8 +424,12 @@ public abstract class Request {
             return JoinResponse.deserialize(data);
         } else if (request.equals("start")) {
             return Start.deserialize(data);
+        } else if (request.equals("start-response")) {
+            return StartResponse.deserialize(data);
         } else if (request.equals("end")) {
             return End.deserialize(data);
+        } else if (request.equals("end-response")) {
+            return EndResponse.deserialize(data);
         } else if (request.equals("move")) {
             return Move.deserialize(data);
         } else if (request.equals("move-response")) {
