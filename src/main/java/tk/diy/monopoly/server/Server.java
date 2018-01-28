@@ -22,6 +22,7 @@ public class Server extends Common implements Runnable {
     public int resendLimit;
     public final boolean debug;
 
+    private long t0;
     private ServerSocket socket;
     private ExecutorService pool;
     private boolean shouldShutdown;
@@ -86,7 +87,9 @@ public class Server extends Common implements Runnable {
                 return;
             }
             this.isRunning = true;
+            this.t0 = System.currentTimeMillis();
         }
+
         short port = this.port;
         String host = this.host;
         int threads = this.threads;
@@ -134,22 +137,36 @@ public class Server extends Common implements Runnable {
         this.log("* fin *");
     }
 
+    private String time() {
+        long now = System.currentTimeMillis() - this.t0;
+        long minutes = now / 60000;
+        long seconds = (now / 1000) % 60;
+        int millis = (int) (now % 1000);
+        return MessageFormat.format("{0,number}:{1,number}.{2,number,000}", minutes, seconds, millis);
+    }
+
     public void log(String msg) {
-        this.log("host", msg);
+        StackTraceElement stk = Thread.currentThread().getStackTrace()[2];
+        this.log(stk, "host", msg);
     }
 
     public void log(Player.Color color, String msg) {
-        this.log(color.toName(), msg);
+        StackTraceElement stk = Thread.currentThread().getStackTrace()[2];
+        this.log(stk, color.toName(), msg);
     }
 
     public void log(InetAddress addr, String msg) {
-        this.log(addr.toString(), msg);
+        StackTraceElement stk = Thread.currentThread().getStackTrace()[2];
+        this.log(stk, addr.toString(), msg);
     }
 
     public void log(String name, String msg) {
-        Date now = new Date();
-        SimpleDateFormat fmt = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
-        String logline = MessageFormat.format("[{0}] <{1}>: {2}", fmt.format(now), name, msg);
+        StackTraceElement stk = Thread.currentThread().getStackTrace()[2];
+        this.log(stk, name, msg);
+    }
+
+    private void log(StackTraceElement stk, String name, String msg) {
+        String logline = MessageFormat.format("({0}:{1}) [{2}] <{3}>: {4}", stk.getFileName(), stk.getLineNumber(), this.time(), name, msg);
         System.out.println(logline);
     }
 
