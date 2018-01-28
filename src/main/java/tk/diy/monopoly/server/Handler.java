@@ -20,11 +20,11 @@ public class Handler implements Runnable {
     private Player self;
     private boolean root;
 
-    public Handler(Server host, Socket conn, int resendLimit) {
+    public Handler(Server host, boolean root, Socket conn, int resendLimit) {
         this.host = host;
         this.conn = conn;
         this.resendLimit = resendLimit;
-        this.root = false; // TODO
+        this.root = root;
 
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(this.conn.getInputStream()));

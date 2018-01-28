@@ -102,7 +102,8 @@ public class Server extends Common implements Runnable {
         try {
             while (true) {
                 Socket conn = this.socket.accept();
-                this.pool.execute(new Handler(this, conn, resendLimit));
+                boolean isRoot = conn.getInetAddress().equals(addr);
+                this.pool.execute(new Handler(this, isRoot, conn, resendLimit));
             }
         } catch (IOException e) {
             if (!this.shouldShutdown) {
