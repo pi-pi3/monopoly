@@ -157,17 +157,17 @@ public class Protocol {
             if (msg.hashCode() == cksum) {
                 req = Request.deserialize(msg);
                 if (req.rootRequired() && !isRoot) {
-                    return this.accessDenied();
+                    req = this.accessDenied();
                 }
                 if (req.stateRequired() != GameState.NONE && req.stateRequired() != currentState) {
                     if (currentState == GameState.STARTED) {
-                        return this.gameStarted();
+                        req = this.gameStarted();
                     } else {
-                        return this.gameNotStarted();
+                        req = this.gameNotStarted();
                     }
                 }
                 if (req.turnRequired() && !myTurn) {
-                    return this.notYourTurn(currentPlayer);
+                    req = this.notYourTurn(currentPlayer);
                 }
                 this.ack();
             } else {
