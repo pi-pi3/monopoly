@@ -48,6 +48,14 @@ public class Handler implements Runnable {
         }
     }
 
+    private String name() {
+        if (this.self != null) {
+            return this.self.color.toName();
+        } else {
+            return this.conn.getInetAddress().toString();
+        }
+    }
+
     public void run() {
         try {
             while (true) {
@@ -55,21 +63,25 @@ public class Handler implements Runnable {
 
                 if (req instanceof Request.Echo) {
                     this.send(new Request.EchoResponse(((Request.Echo) req).message));
+                    this.host.log(this.name(), ((Request.Echo) req).message);
                 } else if (req instanceof Request.Disconnect) {
                     if (this.self != null) {
                         this.host.remove(this.self.color);
                     }
+                    this.host.log(this.name(), "* disconnected *");
                     break;
                 } else if (req instanceof Request.Shutdown) {
                     this.protocol.close();
                     this.conn.close();
                     this.host.shutdown();
+                    this.host.log(this.name(), "* shutdown *");
                     break;
                 // game state elements start here
                 } else if (req instanceof Request.Join) {
                     this.host.join(((Request.Join) req).color);
                     this.self = this.host.player(((Request.Join) req).color);
                     this.send(new Request.JoinResponse(((Request.Join) req).color, true));
+                    this.host.log(this.name(), "* joined *");
                 } else if (req instanceof Request.Start) {
                     boolean hasPlayers = this.host.debug && this.host.playerCount() > 0
                                      || !this.host.debug && this.host.playerCount() > Common.MIN_PLAYERS;
@@ -79,13 +91,18 @@ public class Handler implements Runnable {
                     } else {
                         this.send(new Request.StartResponse(false));
                     }
+                    this.host.log(this.name(), "* starting game *");
+                    this.host.log("* starting game *");
                 } else if (req instanceof Request.End) {
                     this.host.end();
                     this.send(new Request.EndResponse(true));
+                    this.host.log(this.name(), "* ending game *");
+                    this.host.log("* ending game *");
                 } else if (req instanceof Request.Move) {
                     int count = Server.dice.rand();
                     this.self.move(count);
                     this.send(new Request.MoveResponse(count));
+                    this.host.log(this.name(), "* moving by " + count + " steps *");
                 } else {
                     throw new Exception("unimplemented request");
                 }

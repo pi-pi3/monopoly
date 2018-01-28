@@ -6,9 +6,13 @@ import java.io.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.Date;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 
 import tk.diy.monopoly.Game.Options;
 import tk.diy.monopoly.common.Common;
+import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.server.Handler;
 
 public class Server extends Common implements Runnable {
@@ -39,6 +43,8 @@ public class Server extends Common implements Runnable {
             return;
         }
 
+        this.log("* server shutting down *");
+
         this.shouldShutdown = true;
         try {
             this.socket.close();
@@ -48,6 +54,8 @@ public class Server extends Common implements Runnable {
     }
 
     private void terminate() {
+        this.log("* server terminating *");
+
         this.pool.shutdown();
 
         try {
@@ -98,12 +106,21 @@ public class Server extends Common implements Runnable {
             Server.error(1, "io error", e);
         }
 
+        this.log("* starting socket on " + host + ":" + port + " *");
+
         this.pool = Executors.newFixedThreadPool(threads);
+
+        this.log("* running with " + threads + " threads *");
 
         try {
             while (true) {
                 Socket conn = this.socket.accept();
                 boolean isRoot = conn.getInetAddress().equals(addr);
+                if (isRoot) {
+                    this.log(conn.getInetAddress().toString(), "* connected as root *");
+                } else {
+                    this.log(conn.getInetAddress().toString(), "* connected *");
+                }
                 this.pool.execute(new Handler(this, isRoot, conn, resendLimit));
             }
         } catch (IOException e) {
@@ -113,6 +130,27 @@ public class Server extends Common implements Runnable {
         }
 
         this.terminate();
+
+        this.log("* fin *");
+    }
+
+    public void log(String msg) {
+        this.log("host", msg);
+    }
+
+    public void log(Player.Color color, String msg) {
+        this.log(color.toName(), msg);
+    }
+
+    public void log(InetAddress addr, String msg) {
+        this.log(addr.toString(), msg);
+    }
+
+    public void log(String name, String msg) {
+        Date now = new Date();
+        SimpleDateFormat fmt = new SimpleDateFormat();
+        String logline = MessageFormat.format("[{0}] <{1}>: {2}", fmt.format(now), name, msg);
+        System.out.println(logline);
     }
 
     public static void error(int code) {
