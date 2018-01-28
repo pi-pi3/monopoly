@@ -159,15 +159,15 @@ public class Protocol {
                 if (req.rootRequired() && !isRoot) {
                     return this.accessDenied();
                 }
-                if (req.turnRequired() && !myTurn) {
-                    return this.notYourTurn(currentPlayer);
-                }
                 if (req.stateRequired() != GameState.NONE && req.stateRequired() != currentState) {
                     if (currentState == GameState.STARTED) {
                         return this.gameStarted();
                     } else {
                         return this.gameNotStarted();
                     }
+                }
+                if (req.turnRequired() && !myTurn) {
+                    return this.notYourTurn(currentPlayer);
                 }
                 this.ack();
             } else {
