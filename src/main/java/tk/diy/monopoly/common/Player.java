@@ -9,6 +9,33 @@ public class Player {
     public enum Color {
         RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, ORANGE, BLACK, GREY, WHITE;
 
+        public String toName() {
+            switch (this) {
+                case RED:
+                    return "red";
+                case GREEN:
+                    return "green";
+                case BLUE:
+                    return "blue";
+                case CYAN:
+                    return "cyan";
+                case MAGENTA:
+                    return "magenta";
+                case YELLOW:
+                    return "yellow";
+                case ORANGE:
+                    return "orange";
+                case BLACK:
+                    return "black";
+                case GREY:
+                    return "grey";
+                case WHITE:
+                    return "white";
+                default: // unreachable
+                    return "Just curious, does Prof. Mäkiö or Mr. Müller even read this?";
+            }
+        }
+
         public int toInt() {
             switch (this) {
                 case RED:
@@ -33,6 +60,34 @@ public class Player {
                     return 9;
                 default:
                     return -1; // unreachable
+            }
+        }
+
+        public static Color fromName(String color) throws Exception {
+            color = color.toLowerCase();
+            switch (color) {
+                case "red":
+                    return RED;
+                case "green":
+                    return GREEN;
+                case "blue":
+                    return BLUE;
+                case "cyan":
+                    return CYAN;
+                case "magenta":
+                    return MAGENTA;
+                case "yellow":
+                    return YELLOW;
+                case "orange":
+                    return ORANGE;
+                case "black":
+                    return BLACK;
+                case "grey":
+                    return GREY;
+                case "white":
+                    return WHITE;
+                default:
+                    throw new Exception("invalid color name");
             }
         }
 
