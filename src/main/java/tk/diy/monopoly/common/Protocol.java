@@ -130,8 +130,14 @@ public class Protocol {
         Request req = null;
 
         while (req == null) {
-            int cksum = Integer.parseInt(this.in.readLine());
+            String msg_cksum = this.in.readLine();
             String msg = this.in.readLine();
+
+            if (msg_cksum == null || msg == null) {
+                throw new Exception("connection ended unexpectadly");
+            }
+
+            int cksum = Integer.parseInt(msg_cksum);
             if (msg.hashCode() == cksum) {
                 req = Request.deserialize(msg);
                 if (req.rootRequired() && !isRoot) {
