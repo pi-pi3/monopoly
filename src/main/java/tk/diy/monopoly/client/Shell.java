@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.ArrayList;
 
 import tk.diy.monopoly.common.Request;
+import tk.diy.monopoly.common.Player;
 
 public class Shell {
     private Optional<String> ps1;
@@ -88,6 +89,27 @@ public class Shell {
             case "echo": // echo [message...]
                 String message = String.join(" ", argv);
                 return new Request.Echo(message);
+            case "disconnect": // disconnect (requires root)
+                return new Request.Disconnect();
+            case "shutdown": // shutdown (requires root)
+                return new Request.Shutdown();
+            case "join": // join <color>
+                if (argv.length == 0) {
+                    throw new Exception("missing argument <color>");
+                }
+                Player.Color color;
+                try {
+                    color = Player.Color.fromName(argv[0]);
+                } catch (Exception e) {
+                    throw new Exception('"' + argv[0] + "\" is not a valid color");
+                }
+                return new Request.Join(color);
+            case "start": // start (requires root)
+                return new Request.Start();
+            case "end": // end (requires root)
+                return new Request.End();
+            case "move": // move
+                return new Request.Move();
             default:
                 throw new Exception("invalid command: " + arg0);
         }
