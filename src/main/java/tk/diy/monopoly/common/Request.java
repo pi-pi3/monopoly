@@ -319,7 +319,7 @@ public abstract class Request {
         } else if (request.equals("ack")) {
             return Acknowledge.deserialize(data);
         } else if (request.equals("access-denied")) {
-            return Wait.deserialize(data);
+            return AccessDenied.deserialize(data);
         } else if (request.equals("wait")) {
             return Wait.deserialize(data);
         } else if (request.equals("notify")) {
