@@ -29,6 +29,7 @@ public class Common {
 
     protected Common() {
         this.players = new HashMap<Player.Color, Player>();
+        this.playerOrder = new ArrayList<Player.Color>();
         this.board = new Board();
         this.state = GameState.NOT_STARTED;
     }
