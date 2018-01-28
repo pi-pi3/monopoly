@@ -148,7 +148,7 @@ public class Server extends Common implements Runnable {
 
     public void log(String name, String msg) {
         Date now = new Date();
-        SimpleDateFormat fmt = new SimpleDateFormat();
+        SimpleDateFormat fmt = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss.SSS");
         String logline = MessageFormat.format("[{0}] <{1}>: {2}", fmt.format(now), name, msg);
         System.out.println(logline);
     }

@@ -73,8 +73,8 @@ public class Handler implements Runnable {
                 } else if (req instanceof Request.Shutdown) {
                     this.protocol.close();
                     this.conn.close();
-                    this.host.shutdown();
                     this.host.log(this.name(), "* shutdown *");
+                    this.host.shutdown();
                     break;
                 // game state elements start here
                 } else if (req instanceof Request.Join) {
