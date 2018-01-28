@@ -68,6 +68,22 @@ public class Protocol {
         return req;
     }
 
+    public Request gameStarted() throws IOException {
+        this.resendCount = 0;
+
+        Request req = new Request.GameStarted();
+        this.out.writeBytes(req.toString() + '\n');
+        return req;
+    }
+
+    public Request gameNotStarted() throws IOException {
+        this.resendCount = 0;
+
+        Request req = new Request.GameNotStarted();
+        this.out.writeBytes(req.toString() + '\n');
+        return req;
+    }
+
     public Request send(Request request) throws IOException, Exception {
         long t0 = System.currentTimeMillis();
 
@@ -126,7 +142,7 @@ public class Protocol {
         return req;
     }
 
-    public Request recv(boolean isRoot, boolean myTurn, Player.Color currentPlayer) throws IOException, Exception {
+    public Request recv(boolean isRoot, boolean myTurn, Player.Color currentPlayer, GameState currentState) throws IOException, Exception {
         Request req = null;
 
         while (req == null) {
@@ -145,6 +161,13 @@ public class Protocol {
                 }
                 if (req.turnRequired() && !myTurn) {
                     return this.notYourTurn(currentPlayer);
+                }
+                if (req.stateRequired() != GameState.NONE && req.stateRequired() != currentState) {
+                    if (currentState == GameState.STARTED) {
+                        return this.gameStarted();
+                    } else {
+                        return this.gameNotStarted();
+                    }
                 }
                 this.ack();
             } else {

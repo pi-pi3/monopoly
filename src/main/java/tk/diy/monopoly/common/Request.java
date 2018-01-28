@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.json.JSONObject;
 
 import tk.diy.monopoly.common.Player;
+import tk.diy.monopoly.common.GameState;
 
 public abstract class Request {
     public static class Echo extends Request {
@@ -30,6 +31,7 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class EchoResponse extends Request {
@@ -54,6 +56,7 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Resend extends Request {
@@ -62,6 +65,7 @@ public abstract class Request {
         public static Resend deserialize(JSONObject req) throws Exception { return new Resend(); }
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Acknowledge extends Request {
@@ -70,6 +74,7 @@ public abstract class Request {
         public static Acknowledge deserialize(JSONObject req) throws Exception { return new Acknowledge(); }
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class AccessDenied extends Request {
@@ -78,6 +83,7 @@ public abstract class Request {
         public static AccessDenied deserialize(JSONObject req) throws Exception { return new AccessDenied(); }
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Wait extends Request {
@@ -104,6 +110,7 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Notify extends Request {
@@ -112,6 +119,7 @@ public abstract class Request {
         public static Notify deserialize(JSONObject req) throws Exception { return new Notify(); }
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class NotYourTurn extends Request {
@@ -134,6 +142,25 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
+    }
+
+    public static class GameStarted extends Request {
+        private static final JSONObject req = new JSONObject("{\"request\":\"game-started\"}");
+        public JSONObject serializeInner() { return req; }
+        public static GameStarted deserialize(JSONObject req) throws Exception { return new GameStarted(); }
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
+    }
+
+    public static class GameNotStarted extends Request {
+        private static final JSONObject req = new JSONObject("{\"request\":\"game-not-started\"}");
+        public JSONObject serializeInner() { return req; }
+        public static GameNotStarted deserialize(JSONObject req) throws Exception { return new GameNotStarted(); }
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Disconnect extends Request {
@@ -142,6 +169,7 @@ public abstract class Request {
         public static Disconnect deserialize(JSONObject req) throws Exception { return new Disconnect(); }
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Shutdown extends Request {
@@ -150,6 +178,7 @@ public abstract class Request {
         public static Shutdown deserialize(JSONObject req) throws Exception { return new Shutdown(); }
         public boolean rootRequired() { return true; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     // game state requests
@@ -173,6 +202,7 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NOT_STARTED; }
     }
 
     public static class JoinResponse extends Request {
@@ -201,6 +231,7 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Start extends Request {
@@ -209,6 +240,7 @@ public abstract class Request {
         public static Start deserialize(JSONObject req) throws Exception { return new Start(); }
         public boolean rootRequired() { return true; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NOT_STARTED; }
     }
 
     public static class End extends Request {
@@ -217,6 +249,7 @@ public abstract class Request {
         public static End deserialize(JSONObject req) throws Exception { return new End(); }
         public boolean rootRequired() { return true; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.STARTED; }
     }
 
     public static class Move extends Request {
@@ -225,6 +258,7 @@ public abstract class Request {
         public static Move deserialize(JSONObject req) throws Exception { return new Move(); }
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return true; }
+        public GameState stateRequired() { return GameState.STARTED; }
     }
 
     public static class MoveResponse extends Request {
@@ -247,6 +281,7 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
     }
 
     public static class Buy extends Request {
@@ -269,6 +304,7 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return true; }
+        public GameState stateRequired() { return GameState.STARTED; }
     }
 
     public static class Build extends Request {
@@ -294,11 +330,13 @@ public abstract class Request {
 
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return true; }
+        public GameState stateRequired() { return GameState.STARTED; }
     }
 
     protected abstract JSONObject serializeInner();
     public abstract boolean rootRequired();
     public abstract boolean turnRequired();
+    public abstract GameState stateRequired();
 
     public JSONObject serialize() {
         JSONObject data = this.serializeInner();
@@ -326,6 +364,10 @@ public abstract class Request {
             return Notify.deserialize(data);
         } else if (request.equals("not-your-turn")) {
             return NotYourTurn.deserialize(data);
+        } else if (request.equals("game-started")) {
+            return GameStarted.deserialize(data);
+        } else if (request.equals("game-not-started")) {
+            return GameNotStarted.deserialize(data);
         } else if (request.equals("disconnect")) {
             return Disconnect.deserialize(data);
         } else if (request.equals("shutdown")) {

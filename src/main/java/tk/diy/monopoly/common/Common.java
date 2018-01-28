@@ -22,21 +22,25 @@ public class Common {
     protected HashMap<Player.Color, Player> players;
     protected Player.Color currentPlayer;
     protected Board board;
-    protected boolean started;
+    protected GameState state;
     protected int cashPool;
 
     protected Common() {
         this.players = new HashMap<Player.Color, Player>();
         this.board = new Board();
-        this.started = false;
+        this.state = GameState.NOT_STARTED;
+    }
+
+    public synchronized GameState getState() {
+        return this.state;
     }
 
     public synchronized boolean hasStarted() {
-        return this.started;
+        return this.state == GameState.STARTED;
     }
 
     public synchronized void join(Player.Color color) throws Exception {
-        if (this.started) {
+        if (this.hasStarted()) {
             throw new Exception("game already started");
         }
         if (this.players.containsKey(color)) {
@@ -79,19 +83,19 @@ public class Common {
     }
 
     public synchronized void start() throws Exception {
-        if (this.started) {
+        if (this.hasStarted()) {
             throw new Exception("game already started");
         }
 
-        this.started = true;
+        this.state = GameState.STARTED;
     }
 
     public synchronized void end() throws Exception {
-        if (!this.started) {
+        if (!this.hasStarted()) {
             throw new Exception("game already enden");
         }
 
-        this.started = false;
+        this.state = GameState.NOT_STARTED;
     }
 
     // errors

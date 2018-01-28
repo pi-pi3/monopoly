@@ -34,7 +34,7 @@ public class Client extends Common implements Runnable {
     }
 
     private Request recv() throws IOException, Exception {
-        return this.protocol.recv(false, false, null);
+        return this.protocol.recv(false, false, null, null);
     }
 
     public void run() {

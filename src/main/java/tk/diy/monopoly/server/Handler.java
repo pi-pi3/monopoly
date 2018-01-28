@@ -42,9 +42,9 @@ public class Handler implements Runnable {
     private Request recv() throws IOException, Exception {
         // TODO: do this in a prettier way
         if (this.self == null) {
-            return this.protocol.recv(false, false, null);
+            return this.protocol.recv(false, false, null, this.host.getState());
         } else {
-            return this.protocol.recv(this.root, this.host.currentPlayer() == this.self.color, this.host.currentPlayer());
+            return this.protocol.recv(this.root, this.host.currentPlayer() == this.self.color, this.host.currentPlayer(), this.host.getState());
         }
     }
 
