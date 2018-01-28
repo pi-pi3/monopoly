@@ -67,10 +67,7 @@ public class Handler implements Runnable {
                     break;
                 // game state elements start here
                 } else if (req instanceof Request.Join) {
-                    // if running in debug mode, allow one player
-                    boolean hasPlayers = this.host.debug && this.host.playerCount() >= Common.MIN_PLAYERS
-                                     || !this.host.debug && this.host.playerCount() > 0;
-                    if (!this.host.hasStarted() && hasPlayers) {
+                    if (!this.host.hasStarted()) {
                         this.host.join(((Request.Join) req).color);
                         this.send(new Request.JoinResponse(((Request.Join) req).color, true));
                         this.self = this.host.player(((Request.Join) req).color);
