@@ -73,7 +73,10 @@ public class Shell {
             return null;
         }
 
-        String line = this.nextLine();
+        String line = "";
+        while (line.trim().isEmpty()) {
+            line = this.nextLine();
+        }
         String[] args = line.split("[ \t]");
         String arg0 = args[0];
 
