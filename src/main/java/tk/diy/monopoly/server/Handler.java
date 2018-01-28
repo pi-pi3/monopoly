@@ -44,7 +44,7 @@ public class Handler implements Runnable {
         if (this.self == null) {
             return this.protocol.recv(false, false, null, this.host.getState());
         } else {
-            return this.protocol.recv(this.root, this.host.currentPlayer() == this.self.color, this.host.currentPlayer(), this.host.getState());
+            return this.protocol.recv(this.root, this.host.playerColor() == this.self.color, this.host.playerColor(), this.host.getState());
         }
     }
 
@@ -71,8 +71,14 @@ public class Handler implements Runnable {
                     this.self = this.host.player(((Request.Join) req).color);
                     this.send(new Request.JoinResponse(((Request.Join) req).color, true));
                 } else if (req instanceof Request.Start) {
-                    this.host.start();
-                    this.send(new Request.StartResponse(true));
+                    boolean hasPlayers = this.host.debug && this.host.playerCount() > 0
+                                     || !this.host.debug && this.host.playerCount() > 1;
+                    if (hasPlayers) {
+                        this.host.start();
+                        this.send(new Request.StartResponse(true));
+                    } else {
+                        this.send(new Request.StartResponse(false));
+                    }
                 } else if (req instanceof Request.End) {
                     this.host.end();
                     this.send(new Request.EndResponse(true));

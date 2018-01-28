@@ -88,7 +88,7 @@ public class Client extends Common implements Runnable {
                         if (response.success) {
                             this.start();
                         } else {
-                            Client.warn("Couldn't start game.");
+                            Client.warn("Couldn't start game. Are enough players in game?");
                         }
                     } else if (req instanceof Request.End) {
                         Request.EndResponse response = (Request.EndResponse) this.recv();

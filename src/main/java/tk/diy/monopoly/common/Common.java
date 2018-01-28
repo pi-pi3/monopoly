@@ -2,6 +2,7 @@
 package tk.diy.monopoly.common;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 
 import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.rand.Dice;
@@ -20,7 +21,8 @@ public class Common {
     public final static Dice dice = new Dice(2, 6); // 2d6
 
     protected HashMap<Player.Color, Player> players;
-    protected Player.Color currentPlayer;
+    protected ArrayList<Player.Color> playerOrder;
+    protected int currentPlayer;
     protected Board board;
     protected GameState state;
     protected int cashPool;
@@ -48,6 +50,7 @@ public class Common {
         }
 
         this.players.put(color, new Player(color, INIT_CASH));
+        this.playerOrder.add(color);
     }
 
     public synchronized Player remove(Player.Color color) throws Exception {
@@ -58,16 +61,16 @@ public class Common {
         return this.players.remove(color);
     }
 
-    public synchronized Player.Color currentPlayer() {
-        return this.currentPlayer;
-    }
-
-    public synchronized void setPlayer(Player.Color next) {
-        this.currentPlayer = next;
+    public synchronized void nextPlayer() {
+        this.currentPlayer = (this.currentPlayer + 1) % this.playerCount();
     }
 
     public synchronized Player player() {
-        return this.players.get(this.currentPlayer);
+        return this.players.get(this.playerColor());
+    }
+
+    public synchronized Player.Color playerColor() {
+        return this.playerOrder.get(this.currentPlayer);
     }
 
     public synchronized Player player(Player.Color color) throws Exception {
@@ -88,6 +91,7 @@ public class Common {
         }
 
         this.state = GameState.STARTED;
+        this.currentPlayer = 0;
     }
 
     public synchronized void end() throws Exception {
@@ -96,6 +100,8 @@ public class Common {
         }
 
         this.state = GameState.NOT_STARTED;
+        this.players.clear();
+        this.playerOrder.clear();
     }
 
     // errors
