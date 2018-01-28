@@ -318,6 +318,14 @@ public abstract class Request {
             return EchoResponse.deserialize(data);
         } else if (request.equals("ack")) {
             return Acknowledge.deserialize(data);
+        } else if (request.equals("access-denied")) {
+            return Wait.deserialize(data);
+        } else if (request.equals("wait")) {
+            return Wait.deserialize(data);
+        } else if (request.equals("notify")) {
+            return Notify.deserialize(data);
+        } else if (request.equals("not-your-turn")) {
+            return NotYourTurn.deserialize(data);
         } else if (request.equals("disconnect")) {
             return Disconnect.deserialize(data);
         } else if (request.equals("shutdown")) {
@@ -332,6 +340,8 @@ public abstract class Request {
             return End.deserialize(data);
         } else if (request.equals("move")) {
             return Move.deserialize(data);
+        } else if (request.equals("move-response")) {
+            return MoveResponse.deserialize(data);
         } else if (request.equals("buy")) {
             return Buy.deserialize(data);
         } else if (request.equals("build")) {
