@@ -72,7 +72,7 @@ public class Handler implements Runnable {
                     this.send(new Request.JoinResponse(((Request.Join) req).color, true));
                 } else if (req instanceof Request.Start) {
                     boolean hasPlayers = this.host.debug && this.host.playerCount() > 0
-                                     || !this.host.debug && this.host.playerCount() > 1;
+                                     || !this.host.debug && this.host.playerCount() > Common.MIN_PLAYERS;
                     if (hasPlayers) {
                         this.host.start();
                         this.send(new Request.StartResponse(true));

@@ -103,6 +103,8 @@ public class Client extends Common implements Runnable {
                         this.self.move(count);
                         // TODO: field interaction
                         // i.e. buy building, prison, nothing, etc.
+                    } else {
+                        throw new Exception("unimplemented request");
                     }
                 } else if (resp instanceof Request.NotYourTurn) {
                     Client.warn("It's not your turn now. Please wait.");
