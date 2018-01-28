@@ -123,4 +123,21 @@ public class Common {
         System.err.println(cause);
         System.exit(code);
     }
+
+    protected static void warn(String msg) {
+        System.err.print("Warning: ");
+        System.err.println(msg);
+    }
+
+    protected static void warn(String msg, Exception cause) {
+        System.err.print("Warning: ");
+        System.err.println(msg);
+        cause.printStackTrace();
+    }
+
+    protected static void warn(String msg, Object cause) {
+        System.err.print("Warning: ");
+        System.err.println(msg);
+        System.err.println(cause);
+    }
 }

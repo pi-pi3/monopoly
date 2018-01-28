@@ -74,7 +74,8 @@ public class Server extends Common implements Runnable {
     public void run() {
         synchronized (this) {
             if (this.isRunning) {
-                Server.error(1, "cannot run server twice");
+                Server.warn("cannot run server twice");
+                return;
             }
             this.isRunning = true;
         }
@@ -128,5 +129,17 @@ public class Server extends Common implements Runnable {
 
     public static void error(int code, String msg, Object cause) {
         Common.error(code, msg, cause);
+    }
+
+    public static void warn(String msg) {
+        Common.warn(msg);
+    }
+
+    public static void warn(String msg, Exception cause) {
+        Common.warn(msg, cause);
+    }
+
+    public static void warn(String msg, Object cause) {
+        Common.warn(msg, cause);
     }
 }

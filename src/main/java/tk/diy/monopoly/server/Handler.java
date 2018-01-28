@@ -83,9 +83,9 @@ public class Handler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            Server.error(1, "io", e);
+            Server.warn("io", e);
         } catch (Exception e) {
-            Server.error(1, "unknown error", e);
+            Server.warn("unknown error", e);
         }
     }
 }

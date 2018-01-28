@@ -81,7 +81,7 @@ public class Client extends Common implements Runnable {
                             this.join(response.color);
                             this.self = this.player(((Request.Join) req).color);
                         } else {
-                            Client.error(2, "Couldn't join game. It presumably already started.");
+                            Client.warn("Couldn't join game. It presumably already started.");
                         }
                     } else if (req instanceof Request.Move) {
                         Request.MoveResponse response = (Request.MoveResponse) this.recv();
@@ -91,7 +91,7 @@ public class Client extends Common implements Runnable {
                         // i.e. buy building, prison, nothing, etc.
                     }
                 } else if (resp instanceof Request.NotYourTurn) {
-                    System.err.println("It's not your turn now. Please wait.");
+                    Client.warn("It's not your turn now. Please wait.");
                 } else {
                     throw new Exception("unknown exception");
                 }
@@ -121,5 +121,17 @@ public class Client extends Common implements Runnable {
 
     public static void error(int code, String msg, Object cause) {
         Common.error(code, msg, cause);
+    }
+
+    public static void warn(String msg) {
+        Common.warn(msg);
+    }
+
+    public static void warn(String msg, Exception cause) {
+        Common.warn(msg, cause);
+    }
+
+    public static void warn(String msg, Object cause) {
+        Common.warn(msg, cause);
     }
 }
