@@ -1,7 +1,7 @@
 
 package tk.diy.monopoly.common;
 
-import tk.diy.monopoly.common.Field;
+import tk.diy.monopoly.common.field.Field;
 
 public class Board {
     private Field[] fields;

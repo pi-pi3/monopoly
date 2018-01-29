@@ -1,14 +1,17 @@
 
-package tk.diy.monopoly.common;
+package tk.diy.monopoly.common.building;
+
+import tk.diy.monopoly.common.Player;
 
 public abstract class Building {
     protected Player owner;
-    protected int stage;
 
     public abstract String name();
     public abstract int income();
     public abstract int rent();
     public abstract int cost();
+    public abstract boolean canBuild();
+    public abstract void build();
 
     public void own(Player owner) {
         this.owner = owner;

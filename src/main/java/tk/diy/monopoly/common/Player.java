@@ -132,24 +132,32 @@ public class Player {
     }
 
     public void move(int rel) {
-        this.position += rel;
-        if (this.position >= Common.FIELD_COUNT) {
-            this.position = 0;
-        }
+        this.position = (this.position + rel) % Common.FIELD_COUNT;
     }
 
     public void receive(int amount) {
         this.money += amount;
     }
 
-    public void pay(Player other, int amount) {
-        this.money -= amount;
-        other.money += amount;
+    public boolean pay(Player other, int amount) {
+        if (this.money >= amount) {
+            this.money -= amount;
+            other.money += amount;
+            return true;
+        } else {
+            other.money += this.money;
+            this.money = 0;
+            return false;
+        }
     }
 
     public void buy(Building building) {
         this.money -= building.cost();
         building.own(this);
         this.owned.add(building);
+    }
+
+    public int getCash() {
+        return this.money;
     }
 }
