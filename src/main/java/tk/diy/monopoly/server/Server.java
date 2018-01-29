@@ -166,7 +166,12 @@ public class Server extends Common implements Runnable {
     }
 
     private void log(StackTraceElement stk, String name, String msg) {
-        String logline = MessageFormat.format("({0}:{1}) [{2}] <{3}>: {4}", stk.getFileName(), stk.getLineNumber(), this.time(), name, msg);
+        String logline;
+        if (this.debug) {
+            logline = MessageFormat.format("{0}({1}:{2}) [{3}] <{4}>: {5}", stk.getMethodName(), stk.getFileName(), stk.getLineNumber(), this.time(), name, msg);
+        } else {
+            logline = MessageFormat.format("[{0}] <{1}>: {2}", this.time(), name, msg);
+        }
         System.out.println(logline);
     }
 
