@@ -34,7 +34,7 @@ public class Client extends Common implements Runnable {
     }
 
     private Request recv() throws IOException, Exception {
-        return this.protocol.recv(false, false, null, null);
+        return this.protocol.recv();
     }
 
     public void run() {
@@ -106,6 +106,8 @@ public class Client extends Common implements Runnable {
                     } else {
                         throw new Exception("unimplemented request");
                     }
+                } else if (resp instanceof Request.AccessDenied) {
+                    Client.warn("You do not have permission to do that.");
                 } else if (resp instanceof Request.NotYourTurn) {
                     Client.warn("It's not your turn now. Please wait.");
                 } else if (resp instanceof Request.GameStarted) {

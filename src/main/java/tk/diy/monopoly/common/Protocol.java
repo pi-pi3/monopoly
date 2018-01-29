@@ -3,6 +3,7 @@ package tk.diy.monopoly.common;
 
 import java.net.*;
 import java.io.*;
+import java.util.Optional;
 
 import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
@@ -131,24 +132,19 @@ public class Protocol {
         return response;
     }
 
-    private Request recv() throws IOException, Exception {
-        Request req = null;
-
-        while (req == null) {
-            int cksum = Integer.parseInt(this.in.readLine());
-            String msg = this.in.readLine();
-            if (msg.hashCode() == cksum) {
-                req = Request.deserialize(msg);
-                this.ack();
-            } else {
-                this.resend();
-            }
-        }
-
-        return req;
+    public Request recv() throws IOException, Exception {
+        return this.recv(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
     }
 
-    public Request recv(boolean isRoot, boolean myTurn, Player.Color currentPlayer, GameState currentState) throws IOException, Exception {
+    public Request recv(boolean isRoot) throws IOException, Exception {
+        return this.recv(Optional.of(isRoot), Optional.empty(), Optional.empty(), Optional.of(GameState.NOT_STARTED));
+    }
+
+    public Request recv(boolean isRoot, Player.Color player, Player.Color currentPlayer, GameState currentState) throws IOException, Exception {
+        return this.recv(Optional.of(isRoot), Optional.of(player), Optional.of(currentPlayer), Optional.of(currentState));
+    }
+
+    private Request recv(Optional<Boolean> isRoot, Optional<Player.Color> player, Optional<Player.Color> currentPlayer, Optional<GameState> currentState) throws IOException, Exception {
         Request req = null;
 
         while (req == null) {
@@ -162,19 +158,26 @@ public class Protocol {
             int cksum = Integer.parseInt(msg_cksum);
             if (msg.hashCode() == cksum) {
                 req = Request.deserialize(msg);
-                if (req.rootRequired() && !isRoot) {
+
+                if (isRoot.isPresent()
+                 && req.rootRequired() && !isRoot.get()) {
                     req = this.accessDenied();
                 }
-                if (req.stateRequired() != GameState.NONE && req.stateRequired() != currentState) {
-                    if (currentState == GameState.STARTED) {
+                if (currentState.isPresent()
+                 && req.stateRequired() != GameState.NONE
+                 && req.stateRequired() != currentState.get()) {
+                    if (currentState.get() == GameState.STARTED) {
                         req = this.gameStarted();
                     } else {
                         req = this.gameNotStarted();
                     }
                 }
-                if (req.turnRequired() && !myTurn) {
-                    req = this.notYourTurn(currentPlayer);
+                if (player.isPresent() && currentPlayer.isPresent() 
+                 && req.turnRequired()
+                 && player.get() != currentPlayer.get()) {
+                    req = this.notYourTurn(currentPlayer.get());
                 }
+
                 this.ack();
             } else {
                 this.resend();
