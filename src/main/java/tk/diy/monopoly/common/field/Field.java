@@ -7,11 +7,14 @@ import tk.diy.monopoly.common.building.Building;
 
 public abstract class Field {
     public static enum Visit {
+        INCOME,
         PAYED,
         BANKRUPT,
         CANBUY,
         CANBUILD,
         VISITING,
+        IN_JAIL,
+        GOTO_JAIL,
     }
 
     protected Building building;
