@@ -142,7 +142,7 @@ public class Server extends Common implements Runnable {
         long minutes = now / 60000;
         long seconds = (now / 1000) % 60;
         int millis = (int) (now % 1000);
-        return MessageFormat.format("{0,number}:{1,number}.{2,number,000}", minutes, seconds, millis);
+        return MessageFormat.format("{0,number}:{1,number,00}.{2,number,000}", minutes, seconds, millis);
     }
 
     public void log(String msg) {
