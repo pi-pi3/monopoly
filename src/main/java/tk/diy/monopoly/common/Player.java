@@ -3,7 +3,7 @@ package tk.diy.monopoly.common;
 
 import java.util.ArrayList;
 
-import tk.diy.monopoly.common.Building;
+import tk.diy.monopoly.common.building.Building;
 
 public class Player {
     public enum Color {
