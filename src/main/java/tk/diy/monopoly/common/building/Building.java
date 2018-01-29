@@ -7,7 +7,6 @@ public abstract class Building {
     protected Player owner;
 
     public abstract String name();
-    public abstract int income();
     public abstract int rent();
     public abstract int cost();
     public abstract boolean canBuild();

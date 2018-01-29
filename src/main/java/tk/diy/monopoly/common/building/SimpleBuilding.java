@@ -25,10 +25,6 @@ public class SimpleBuilding extends Building {
         return this.name;
     }
 
-    public int income() {
-        return 0;
-    }
-
     public int rent() {
         return this.rent * this.stage;
     }
