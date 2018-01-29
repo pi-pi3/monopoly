@@ -108,6 +108,14 @@ public class Handler implements Runnable {
                     this.self.move(count);
                     this.send(new Request.MoveResponse(count));
                     this.host.log(this.name(), "* moving by " + count + " steps *");
+                } else if (req instanceof Request.AccessDenied) {
+                    this.host.log(this.name(), "* access denied *");
+                } else if (req instanceof Request.NotYourTurn) {
+                    this.host.log(this.name(), "* not your turn *");
+                } else if (req instanceof Request.GameStarted) {
+                    this.host.log(this.name(), "* game has already started *");
+                } else if (req instanceof Request.GameNotStarted) {
+                    this.host.log(this.name(), "* game has not started yet *");
                 } else {
                     throw new Exception("unimplemented request");
                 }
