@@ -59,6 +59,7 @@ public class Common {
             throw new Exception("no player of that color");
         }
 
+        this.playerOrder.remove(color);
         return this.players.remove(color);
     }
 
@@ -66,12 +67,16 @@ public class Common {
         this.currentPlayer = (this.currentPlayer + 1) % this.playerCount();
     }
 
-    public synchronized Player player() {
-        return this.players.get(this.playerColor());
+    public synchronized boolean hasPlayer(Player.Color color) {
+        return this.players.containsKey(color);
     }
 
     public synchronized Player.Color playerColor() {
         return this.playerOrder.get(this.currentPlayer);
+    }
+
+    public synchronized Player player() {
+        return this.players.get(this.playerColor());
     }
 
     public synchronized Player player(Player.Color color) throws Exception {

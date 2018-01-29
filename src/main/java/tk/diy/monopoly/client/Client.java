@@ -81,7 +81,7 @@ public class Client extends Common implements Runnable {
                             this.join(response.color);
                             this.self = this.player(((Request.Join) req).color);
                         } else {
-                            Client.warn("Couldn't join game. It presumably already started.");
+                            Client.warn("Couldn't join game.");
                         }
                     } else if (req instanceof Request.Start) {
                         Request.StartResponse response = (Request.StartResponse) this.recv();

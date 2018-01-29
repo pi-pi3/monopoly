@@ -60,9 +60,9 @@ public class Server extends Common implements Runnable {
         this.pool.shutdown();
 
         try {
-            if (!this.pool.awaitTermination(60, TimeUnit.SECONDS)) {
+            if (!this.pool.awaitTermination(5, TimeUnit.SECONDS)) {
                 this.pool.shutdownNow();
-                if (!this.pool.awaitTermination(60, TimeUnit.SECONDS)) {
+                if (!this.pool.awaitTermination(5, TimeUnit.SECONDS)) {
                     System.err.println("Error: pool did not terminate");
                 }
             }
@@ -116,7 +116,7 @@ public class Server extends Common implements Runnable {
         this.log("* running with " + threads + " threads *");
 
         try {
-            while (true) {
+            while (!this.shouldShutdown) {
                 Socket conn = this.socket.accept();
                 boolean isRoot = conn.getInetAddress().equals(addr);
                 if (isRoot) {

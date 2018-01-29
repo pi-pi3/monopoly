@@ -78,10 +78,16 @@ public class Handler implements Runnable {
                     break;
                 // game state elements start here
                 } else if (req instanceof Request.Join) {
-                    this.host.join(((Request.Join) req).color);
-                    this.self = this.host.player(((Request.Join) req).color);
-                    this.send(new Request.JoinResponse(((Request.Join) req).color, true));
-                    this.host.log(this.name(), "* joined *");
+                    Player.Color color = ((Request.Join) req).color;
+                    if (!this.host.hasPlayer(color)) {
+                        this.host.join(color);
+                        this.self = this.host.player(color);
+                        this.send(new Request.JoinResponse(color, true));
+                        this.host.log(this.name(), "* joined *");
+                    } else {
+                        this.send(new Request.JoinResponse(color, false));
+                        this.host.log(this.name(), "* <" + color.toName() + "> is already in game *");
+                    }
                 } else if (req instanceof Request.Start) {
                     boolean hasPlayers = this.host.debug && this.host.playerCount() > 0
                                      || !this.host.debug && this.host.playerCount() > Common.MIN_PLAYERS;
@@ -111,6 +117,15 @@ public class Handler implements Runnable {
             Server.warn("io", e);
         } catch (Exception e) {
             Server.warn("unknown error", e);
+        }
+
+        if (this.self != null) {
+            try {
+                this.host.remove(this.self.color);
+            } catch (Exception _e) {
+                // unreachable
+                _e.printStackTrace();
+            }
         }
     }
 }

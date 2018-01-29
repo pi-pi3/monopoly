@@ -100,9 +100,17 @@ public class Protocol {
 
             response = Request.deserialize(resp);
             if (response instanceof Request.Acknowledge) {
-                // do nothing
+                break; // do nothing
+            } else if (response instanceof Request.Resend) {
+                continue; // do nothing
             } else if (response instanceof Request.AccessDenied) {
-                throw new Exception("access denied");
+                break; // do nothing
+            } else if (response instanceof Request.NotYourTurn) {
+                break; // do nothing
+            } else if (response instanceof Request.GameStarted) {
+                break; // do nothing
+            } else if (response instanceof Request.GameNotStarted) {
+                break; // do nothing
             } else if (response instanceof Request.Wait) {
                 int timeout = ((Request.Wait) response).timeout; // TODO
                 Request notify = this.recv();
@@ -112,8 +120,6 @@ public class Protocol {
                     break;
                 }
                 throw new Exception("response is not Notify");
-            } else if (response instanceof Request.NotYourTurn) {
-                // do nothing
             } else {
                 throw new Exception("no response");
             }
