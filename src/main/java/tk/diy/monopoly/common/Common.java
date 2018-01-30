@@ -16,8 +16,11 @@ public class Common {
 
     public final static int MIN_PLAYERS = 2;
     public final static int FIELD_COUNT = 40; 
-    public final static int INIT_CASH = 6000;
+    public final static int BONUS_CASH = 2000;
     public final static int BASE_CASH = 4000;
+    public final static int INIT_CASH = BASE_CASH + BONUS_CASH;
+    public final static int JAIL_FIELD = 10;
+    public final static int JAIL_SENTENCE = 3;
     public final static Dice dice = new Dice(2, 6); // 2d6
 
     protected HashMap<Player.Color, Player> players;
@@ -65,6 +68,10 @@ public class Common {
 
     public synchronized void nextPlayer() {
         this.currentPlayer = (this.currentPlayer + 1) % this.playerCount();
+
+        while (this.player().doJail()) {
+            this.currentPlayer = (this.currentPlayer + 1) % this.playerCount();
+        }
     }
 
     public synchronized boolean hasPlayer(Player.Color color) {

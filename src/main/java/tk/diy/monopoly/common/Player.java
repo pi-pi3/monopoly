@@ -123,32 +123,41 @@ public class Player {
     private ArrayList<Building> owned; // TODO: serialize
     private int position;
     private int money;
+    private int jail; // turns left in jail
+    private int trainStations;
+    private int businesses;
 
     public Player(Color color, int money) {
         this.color = color;
         this.owned = new ArrayList<Building>();
         this.position = 0;
         this.money = money;
+        this.jail = 0;
+        this.trainStations = 0;
+        this.businesses = 0;
     }
 
     public void move(int rel) {
-        this.position = (this.position + rel) % Common.FIELD_COUNT;
+        this.position += rel;
+        if (this.position > Common.FIELD_COUNT) {
+            this.position -= Common.FIELD_COUNT;
+            this.receive(Common.BASE_CASH);
+        }
     }
 
-    public void receive(int amount) {
+    public void moveTo(int abs) {
+        this.position = abs;
+    }
+
+    public boolean receive(int amount) {
         this.money += amount;
+        return this.money >= 0;
     }
 
     public boolean pay(Player other, int amount) {
-        if (this.money >= amount) {
-            this.money -= amount;
-            other.money += amount;
-            return true;
-        } else {
-            other.money += this.money;
-            this.money = 0;
-            return false;
-        }
+        this.money -= amount;
+        other.money += amount;
+        return this.money >= 0;
     }
 
     public void buy(Building building) {
@@ -159,5 +168,34 @@ public class Player {
 
     public int getCash() {
         return this.money;
+    }
+
+    public void setJail(int jail) {
+        this.jail = jail;
+    }
+
+    public boolean inJail() {
+        return this.jail > 0;
+    }
+
+    public boolean doJail() {
+        this.jail--;
+        return this.inJail();
+    }
+
+    public int getStations() {
+        return this.trainStations;
+    }
+
+    public void addStation() {
+        this.trainStations++;
+    }
+
+    public int getBusinesses() {
+        return this.businesses;
+    }
+
+    public void addBusiness() {
+        this.businesses++;
     }
 }
