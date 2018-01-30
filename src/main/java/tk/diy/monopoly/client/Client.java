@@ -36,7 +36,7 @@ public class Client extends Common implements Runnable {
     }
 
     private Request recv() throws IOException, Exception {
-        return this.protocol.recv();
+        return this.protocol.recv().req;
     }
 
     public void run() {
@@ -55,6 +55,9 @@ public class Client extends Common implements Runnable {
             outer:
             while (!sh.quitEh()) {
                 Request req = sh.nextRequest();
+                this.send(new Request.Ask()); // this is a hack that updates... look for XXX in Handler.java
+                // basically now every communication attempt starts with an ask
+                // request which updates the handler
                 Request resp = this.send(req);
 
                 if (resp instanceof Request.Acknowledge) {

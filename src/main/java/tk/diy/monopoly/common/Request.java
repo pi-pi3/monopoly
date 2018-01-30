@@ -9,6 +9,15 @@ import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.GameState;
 
 public abstract class Request {
+    public static class Ask extends Request {
+        private static final JSONObject req = new JSONObject("{\"request\":\"ask\"}");
+        public JSONObject serializeInner() { return req; }
+        public static Ask deserialize(JSONObject req) throws Exception { return new Ask(); }
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
+    }
+
     public static class Echo extends Request {
         public String message;
 
@@ -400,6 +409,8 @@ public abstract class Request {
             return Echo.deserialize(data);
         } else if (request.equals("echo-response")) {
             return EchoResponse.deserialize(data);
+        } else if (request.equals("ask")) {
+            return Ask.deserialize(data);
         } else if (request.equals("ack")) {
             return Acknowledge.deserialize(data);
         } else if (request.equals("access-denied")) {

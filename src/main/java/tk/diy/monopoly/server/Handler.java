@@ -8,6 +8,7 @@ import tk.diy.monopoly.server.Server;
 import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
 import tk.diy.monopoly.common.Protocol;
+import tk.diy.monopoly.common.Protocol.ProtocolRequest;
 import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.field.Field;
 
@@ -40,9 +41,9 @@ public class Handler implements Runnable {
         return this.protocol.send(request);
     }
 
-    private Request recv() throws IOException, Exception {
+    private ProtocolRequest recv() throws IOException, Exception {
         if (this.host.hasStarted()) {
-            return this.protocol.recv(this.root, this.self.color, this.host.playerColor(), this.host.getState());
+            return this.protocol.recv(this.root, this.self.color, this.host.playerColor(), this.host.getState()); // XXX that updates these variables
         } else {
             return this.protocol.recv(this.root);
         }
@@ -60,98 +61,108 @@ public class Handler implements Runnable {
         try {
             outer:
             while (true) {
-                Request req = this.recv();
+                ProtocolRequest tmp = this.recv();
+                Request req = tmp.req;
+                Request ans = tmp.ans;
 
-                if (req instanceof Request.Echo) {
-                    this.send(new Request.EchoResponse(((Request.Echo) req).message));
-                    this.host.log(this.name(), ((Request.Echo) req).message);
-                } else if (req instanceof Request.Disconnect) {
-                    if (this.self != null) {
-                        this.host.remove(this.self.color);
-                    }
-                    this.host.log(this.name(), "* disconnected *");
-                    break;
-                } else if (req instanceof Request.Shutdown) {
-                    this.protocol.close();
-                    this.conn.close();
-                    this.host.log(this.name(), "* shutdown *");
-                    this.host.shutdown();
-                    break;
-                // game state elements start here
-                } else if (req instanceof Request.Join) {
-                    Player.Color color = ((Request.Join) req).color;
-                    if (!this.host.hasPlayer(color)) {
-                        this.host.join(color);
-                        this.self = this.host.player(color);
-                        this.send(new Request.JoinResponse(color, true));
-                        this.host.log(this.name(), "* joined *");
+                if (req instanceof Request.Ask) {
+                    continue;
+                }
+
+                if (ans instanceof Request.Acknowledge) {
+                    if (req instanceof Request.Echo) {
+                        this.send(new Request.EchoResponse(((Request.Echo) req).message));
+                        this.host.log(this.name(), ((Request.Echo) req).message);
+                    } else if (req instanceof Request.Disconnect) {
+                        if (this.self != null) {
+                            this.host.remove(this.self.color);
+                        }
+                        this.host.log(this.name(), "* disconnected *");
+                        break;
+                    } else if (req instanceof Request.Shutdown) {
+                        this.protocol.close();
+                        this.conn.close();
+                        this.host.log(this.name(), "* shutdown *");
+                        this.host.shutdown();
+                        break;
+                    // game state elements start here
+                    } else if (req instanceof Request.Join) {
+                        Player.Color color = ((Request.Join) req).color;
+                        if (!this.host.hasPlayer(color)) {
+                            this.host.join(color);
+                            this.self = this.host.player(color);
+                            this.send(new Request.JoinResponse(color, true));
+                            this.host.log(this.name(), "* joined *");
+                        } else {
+                            this.send(new Request.JoinResponse(color, false));
+                            this.host.log(this.name(), "* <" + color.toName() + "> is already in game *");
+                        }
+                    } else if (req instanceof Request.Start) {
+                        boolean hasPlayers = this.host.debug && this.host.playerCount() > 0
+                                         || !this.host.debug && this.host.playerCount() > Common.MIN_PLAYERS;
+                        if (hasPlayers) {
+                            this.host.start();
+                            this.send(new Request.StartResponse(true));
+                        } else {
+                            this.send(new Request.StartResponse(false));
+                        }
+                        this.host.log(this.name(), "* starting game *");
+                        this.host.log("* starting game *");
+                    } else if (req instanceof Request.End) {
+                        this.host.end();
+                        this.send(new Request.EndResponse(true));
+                        this.host.log(this.name(), "* ending game *");
+                        this.host.log("* ending game *");
+                    } else if (req instanceof Request.Move) {
+                        int count = Server.dice.rand();
+                        this.self.move(count);
+                        this.send(new Request.MoveResponse(count));
+                        this.host.log(this.name(), "* moving by " + count + " steps *");
+
+                        int position = this.self.position();
+                        Field field = this.host.getBoard().get(position);
+                        this.host.log(this.name(), "* now on \"" + field.name() + "\" *");
+                        switch (field.visit(this.self)) {
+                            case VISITING:
+                                this.host.log(this.name(), "* visiting *");
+                                break;
+                            case INCOME:
+                                this.host.log(this.name(), "* income *");
+                                break;
+                            case PAYED:
+                                this.host.log(this.name(), "* payed *");
+                                break;
+                            case BANKRUPT:
+                                this.host.log(this.name(), "* bankrupt *");
+                                // TODO
+                                break outer;
+                            case CANBUY:
+                                this.host.log(this.name(), "* canbuy *");
+                                // TODO
+                                break;
+                            case CANBUILD:
+                                this.host.log(this.name(), "* canbuild *");
+                                // TODO
+                                break;
+                            case IN_JAIL:
+                                this.host.log(this.name(), "* in_jail *");
+                                break;
+                            case GOTO_JAIL:
+                                this.host.log(this.name(), "* goto_jail *");
+                                break;
+                        }
+
+                        this.host.nextPlayer();
                     } else {
-                        this.send(new Request.JoinResponse(color, false));
-                        this.host.log(this.name(), "* <" + color.toName() + "> is already in game *");
+                        throw new Exception("unimplemented request");
                     }
-                } else if (req instanceof Request.Start) {
-                    boolean hasPlayers = this.host.debug && this.host.playerCount() > 0
-                                     || !this.host.debug && this.host.playerCount() > Common.MIN_PLAYERS;
-                    if (hasPlayers) {
-                        this.host.start();
-                        this.send(new Request.StartResponse(true));
-                    } else {
-                        this.send(new Request.StartResponse(false));
-                    }
-                    this.host.log(this.name(), "* starting game *");
-                    this.host.log("* starting game *");
-                } else if (req instanceof Request.End) {
-                    this.host.end();
-                    this.send(new Request.EndResponse(true));
-                    this.host.log(this.name(), "* ending game *");
-                    this.host.log("* ending game *");
-                } else if (req instanceof Request.Move) {
-                    int count = Server.dice.rand();
-                    this.self.move(count);
-                    this.send(new Request.MoveResponse(count));
-                    this.host.log(this.name(), "* moving by " + count + " steps *");
-
-                    int position = this.self.position();
-                    Field field = this.host.getBoard().get(position);
-                    this.host.log(this.name(), "* now on \"" + field.name() + "\" *");
-                    switch (field.visit(this.self)) {
-                        case VISITING:
-                            this.host.log(this.name(), "* visiting *");
-                            break;
-                        case INCOME:
-                            this.host.log(this.name(), "* income *");
-                            break;
-                        case PAYED:
-                            this.host.log(this.name(), "* payed *");
-                            break;
-                        case BANKRUPT:
-                            this.host.log(this.name(), "* bankrupt *");
-                            // TODO
-                            break outer;
-                        case CANBUY:
-                            this.host.log(this.name(), "* canbuy *");
-                            // TODO
-                            break;
-                        case CANBUILD:
-                            this.host.log(this.name(), "* canbuild *");
-                            // TODO
-                            break;
-                        case IN_JAIL:
-                            this.host.log(this.name(), "* in_jail *");
-                            break;
-                        case GOTO_JAIL:
-                            this.host.log(this.name(), "* goto_jail *");
-                            break;
-                    }
-
-                    this.host.nextPlayer();
-                } else if (req instanceof Request.AccessDenied) {
+                } else if (ans instanceof Request.AccessDenied) {
                     this.host.log(this.name(), "* access denied *");
-                } else if (req instanceof Request.NotYourTurn) {
+                } else if (ans instanceof Request.NotYourTurn) {
                     this.host.log(this.name(), "* not your turn *");
-                } else if (req instanceof Request.GameStarted) {
+                } else if (ans instanceof Request.GameStarted) {
                     this.host.log(this.name(), "* game has already started *");
-                } else if (req instanceof Request.GameNotStarted) {
+                } else if (ans instanceof Request.GameNotStarted) {
                     this.host.log(this.name(), "* game has not started yet *");
                 } else {
                     throw new Exception("unimplemented request");

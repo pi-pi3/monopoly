@@ -9,6 +9,16 @@ import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
 
 public class Protocol {
+    public static class ProtocolRequest {
+        public final Request req;
+        public final Request ans;
+
+        public ProtocolRequest(Request req, Request ans) {
+            this.req = req;
+            this.ans = ans;
+        }
+    }
+
     private BufferedReader in;
     private DataOutputStream out;
     private int resendLimit;
@@ -36,7 +46,7 @@ public class Protocol {
         this.out.close();
     }
 
-    public void resend() throws IOException, Exception {
+    public Request resend() throws IOException, Exception {
         if (this.resendCount >= this.resendLimit) {
             throw new Exception("too many resend requests");
         }
@@ -44,13 +54,15 @@ public class Protocol {
         this.resendCount++;
         Request req = new Request.Resend();
         this.out.writeBytes(req.toString() + '\n');
+        return req;
     }
 
-    public void ack() throws IOException {
+    public Request ack() throws IOException {
         this.resendCount = 0;
 
         Request req = new Request.Acknowledge();
         this.out.writeBytes(req.toString() + '\n');
+        return req;
     }
 
     public Request notYourTurn(Player.Color currentPlayer) throws IOException {
@@ -114,7 +126,7 @@ public class Protocol {
                 break; // do nothing
             } else if (response instanceof Request.Wait) {
                 int timeout = ((Request.Wait) response).timeout; // TODO
-                Request notify = this.recv();
+                Request notify = this.recv().req;
                 if (notify instanceof Request.Notify) {
                     // proceed without error
                     response = new Request.Acknowledge();
@@ -132,20 +144,21 @@ public class Protocol {
         return response;
     }
 
-    public Request recv() throws IOException, Exception {
+    public ProtocolRequest recv() throws IOException, Exception {
         return this.recv(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
     }
 
-    public Request recv(boolean isRoot) throws IOException, Exception {
+    public ProtocolRequest recv(boolean isRoot) throws IOException, Exception {
         return this.recv(Optional.of(isRoot), Optional.empty(), Optional.empty(), Optional.of(GameState.NOT_STARTED));
     }
 
-    public Request recv(boolean isRoot, Player.Color player, Player.Color currentPlayer, GameState currentState) throws IOException, Exception {
+    public ProtocolRequest recv(boolean isRoot, Player.Color player, Player.Color currentPlayer, GameState currentState) throws IOException, Exception {
         return this.recv(Optional.of(isRoot), Optional.of(player), Optional.of(currentPlayer), Optional.of(currentState));
     }
 
-    private Request recv(Optional<Boolean> isRoot, Optional<Player.Color> player, Optional<Player.Color> currentPlayer, Optional<GameState> currentState) throws IOException, Exception {
+    private ProtocolRequest recv(Optional<Boolean> isRoot, Optional<Player.Color> player, Optional<Player.Color> currentPlayer, Optional<GameState> currentState) throws IOException, Exception {
         Request req = null;
+        Request ans = null;
 
         while (req == null) {
             String msg_cksum = this.in.readLine();
@@ -161,29 +174,33 @@ public class Protocol {
 
                 if (isRoot.isPresent()
                  && req.rootRequired() && !isRoot.get()) {
-                    req = this.accessDenied();
+                    ans = this.accessDenied();
+                    break;
                 }
                 if (currentState.isPresent()
                  && req.stateRequired() != GameState.NONE
                  && req.stateRequired() != currentState.get()) {
                     if (currentState.get() == GameState.STARTED) {
-                        req = this.gameStarted();
+                        ans = this.gameStarted();
+                        break;
                     } else {
-                        req = this.gameNotStarted();
+                        ans = this.gameNotStarted();
+                        break;
                     }
                 }
                 if (player.isPresent() && currentPlayer.isPresent() 
                  && req.turnRequired()
                  && player.get() != currentPlayer.get()) {
-                    req = this.notYourTurn(currentPlayer.get());
+                    ans = this.notYourTurn(currentPlayer.get());
+                    break;
                 }
 
-                this.ack();
+                ans = this.ack();
             } else {
-                this.resend();
+                ans = this.resend();
             }
         }
 
-        return req;
+        return new ProtocolRequest(req, ans);
     }
 }
