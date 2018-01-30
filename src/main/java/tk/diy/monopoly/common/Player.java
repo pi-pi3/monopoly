@@ -137,6 +137,10 @@ public class Player {
         this.businesses = 0;
     }
 
+    public int position() {
+        return this.position;
+    }
+
     public void move(int rel) {
         this.position += rel;
         if (this.position > Common.FIELD_COUNT) {

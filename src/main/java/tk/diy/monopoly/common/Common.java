@@ -37,6 +37,10 @@ public class Common {
         this.state = GameState.NOT_STARTED;
     }
 
+    public synchronized Board getBoard() {
+        return this.board;
+    }
+
     public synchronized GameState getState() {
         return this.state;
     }

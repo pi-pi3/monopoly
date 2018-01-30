@@ -11,6 +11,8 @@ import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
 import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.Protocol;
+import tk.diy.monopoly.common.field.Field;
+import tk.diy.monopoly.common.field.Field.Visit;
 
 public class Client extends Common implements Runnable {
     public short port;
@@ -50,6 +52,7 @@ public class Client extends Common implements Runnable {
 
             Shell sh = new Shell("> ", System.in, false);
 
+            outer:
             while (!sh.quitEh()) {
                 Request req = sh.nextRequest();
                 Request resp = this.send(req);
@@ -100,9 +103,42 @@ public class Client extends Common implements Runnable {
                     } else if (req instanceof Request.Move) {
                         Request.MoveResponse response = (Request.MoveResponse) this.recv();
                         int count = response.count;
+                        Client.say("You rolled " + count);
                         this.self.move(count);
-                        // TODO: field interaction
-                        // i.e. buy building, prison, nothing, etc.
+
+                        int position = this.self.position();
+                        Field field = this.board.get(position);
+                        Client.say("You're on the \"" + field.name() + "\" field");
+                        switch (field.visit(this.self)) {
+                            case VISITING:
+                                Client.say("You pass through, unable to do a thing.");
+                                break;
+                            case INCOME:
+                                Client.say("Bonus income!");
+                                break;
+                            case PAYED:
+                                Client.say("You payed rent.");
+                                break;
+                            case BANKRUPT:
+                                Client.say("You payed rent and went bankrupt!");
+                                break outer;
+                            case CANBUY:
+                                Client.say("Would you like to buy this building? [y/N]");
+                                // TODO
+                                break;
+                            case CANBUILD:
+                                Client.say("Would you like to upgrade this building? [y/N]");
+                                // TODO
+                                break;
+                            case IN_JAIL:
+                                Client.say("You're still in jail. Please wait.");
+                                break;
+                            case GOTO_JAIL:
+                                Client.say("For your crimes you are sent to jail for 3 rounds!");
+                                break;
+                        }
+
+                        this.nextPlayer();
                     } else {
                         throw new Exception("unimplemented request");
                     }
@@ -155,5 +191,9 @@ public class Client extends Common implements Runnable {
 
     public static void warn(String msg, Object cause) {
         Common.warn(msg, cause);
+    }
+
+    public static void say(String msg) {
+        System.out.println(msg);
     }
 }

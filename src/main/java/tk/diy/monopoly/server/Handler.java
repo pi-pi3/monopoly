@@ -9,6 +9,7 @@ import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Request;
 import tk.diy.monopoly.common.Protocol;
 import tk.diy.monopoly.common.Player;
+import tk.diy.monopoly.common.field.Field;
 
 public class Handler implements Runnable {
     private final Server host;
@@ -57,6 +58,7 @@ public class Handler implements Runnable {
 
     public void run() {
         try {
+            outer:
             while (true) {
                 Request req = this.recv();
 
@@ -108,6 +110,41 @@ public class Handler implements Runnable {
                     this.self.move(count);
                     this.send(new Request.MoveResponse(count));
                     this.host.log(this.name(), "* moving by " + count + " steps *");
+
+                    int position = this.self.position();
+                    Field field = this.host.getBoard().get(position);
+                    this.host.log(this.name(), "* now on \"" + field.name() + "\" *");
+                    switch (field.visit(this.self)) {
+                        case VISITING:
+                            this.host.log(this.name(), "* visiting *");
+                            break;
+                        case INCOME:
+                            this.host.log(this.name(), "* income *");
+                            break;
+                        case PAYED:
+                            this.host.log(this.name(), "* payed *");
+                            break;
+                        case BANKRUPT:
+                            this.host.log(this.name(), "* bankrupt *");
+                            // TODO
+                            break outer;
+                        case CANBUY:
+                            this.host.log(this.name(), "* canbuy *");
+                            // TODO
+                            break;
+                        case CANBUILD:
+                            this.host.log(this.name(), "* canbuild *");
+                            // TODO
+                            break;
+                        case IN_JAIL:
+                            this.host.log(this.name(), "* in_jail *");
+                            break;
+                        case GOTO_JAIL:
+                            this.host.log(this.name(), "* goto_jail *");
+                            break;
+                    }
+
+                    this.host.nextPlayer();
                 } else if (req instanceof Request.AccessDenied) {
                     this.host.log(this.name(), "* access denied *");
                 } else if (req instanceof Request.NotYourTurn) {
