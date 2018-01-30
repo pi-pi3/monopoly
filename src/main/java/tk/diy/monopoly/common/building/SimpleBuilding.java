@@ -30,7 +30,7 @@ public class SimpleBuilding extends Building {
     }
 
     public int cost() {
-        return this.cost * this.stage;
+        return this.cost * (this.stage + 1);
     }
 
     public boolean canBuild() {
