@@ -1,6 +1,7 @@
 
 package tk.diy.monopoly.common.field;
 
+import tk.diy.monopoly.common.Common;
 import tk.diy.monopoly.common.Board;
 import tk.diy.monopoly.common.Player;
 
