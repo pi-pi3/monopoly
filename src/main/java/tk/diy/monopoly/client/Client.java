@@ -3,6 +3,7 @@ package tk.diy.monopoly.client;
 
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.ArrayList;
 import java.net.*;
 import java.io.*;
 
@@ -56,6 +57,43 @@ public class Client extends Common implements Runnable {
             outer:
             while (!sh.quitEh()) {
                 Request req = sh.nextRequest();
+
+                if (req instanceof Request.Show) {
+                    if (this.self != null) {
+                        System.out.println(": " + this.self.color.toName());
+                        System.out.println("Cash: " + this.self.getCash() + '€');
+                        int position = this.self.position();
+                        Field field = this.board.get(position);
+                        System.out.println("Position: " + position + " \"" + field.name() + '"');
+                        if (this.self.inJail()) {
+                            System.out.println("You're now in jail for another " + this.self.getJail() + " rounds.");
+                        }
+                        ArrayList<Building> owned = this.self.getOwned();
+                        System.out.println(" * Owned buildings");
+                        for (int i = 0; i < owned.size(); i++) {
+                            Building building = owned.get(i);
+                            System.out.println(" #" + i + ": " + building.name());
+                            System.out.println("  Current rent: " + building.rent() + '€');
+                            int stage = building.getStage();
+                            if (stage > 1 && stage < 6) {
+                                System.out.println("  " + (stage - 1) + " Houses");
+                                if (stage < 5) {
+                                    System.out.println("  The next one costs " + building.cost() + '€');
+                                } else {
+                                    System.out.println("  A Hotel costs " + building.cost() + '€');
+                                }
+                            } else if (stage == 6) {
+                                System.out.println("  1 Hotel");
+                            } else {
+                                System.out.println("  The first House costs " + building.cost() + '€');
+                            }
+                        }
+                    } else {
+                        Client.warn("Cannot do that. The game has not started yet.");
+                    }
+                    continue;
+                }
+
                 this.send(new Request.Ask()); // this is a hack that updates... look for XXX in Handler.java
                 // basically now every communication attempt starts with an ask
                 // request which updates the handler
@@ -134,7 +172,7 @@ public class Client extends Common implements Runnable {
                                 boolean buy = sh.ask();
                                 this.send(new Request.Buy(buy));
                                 if (buy) {
-                                    building.own(this.self);
+                                    this.self.buy(building);
                                     Client.say("You bought \"" + building.name() + "\" for " + cost + "€");
                                 }
                                 break;

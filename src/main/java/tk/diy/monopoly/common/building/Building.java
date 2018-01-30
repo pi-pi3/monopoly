@@ -11,6 +11,7 @@ public abstract class Building {
     public abstract int cost();
     public abstract boolean canBuild();
     public abstract void build();
+    public abstract int getStage();
 
     public void own(Player owner) {
         this.owner = owner;

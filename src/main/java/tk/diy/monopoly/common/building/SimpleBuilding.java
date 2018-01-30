@@ -4,7 +4,7 @@ package tk.diy.monopoly.common.building;
 import tk.diy.monopoly.common.Player;
 
 public class SimpleBuilding extends Building {
-    public static final int MAX_STAGE = 5; // stages 1-4 are number of houses, stage 5 is hotel
+    public static final int MAX_STAGE = 6; // stages 2-5 are number of houses, stage 6 is hotel
     public static final double RENT_MULTIPLIER = 0.125;
 
     private String name;
@@ -39,6 +39,10 @@ public class SimpleBuilding extends Building {
 
     public void build() {
         this.stage += 1;
+    }
+
+    public int getStage() {
+        return this.stage;
     }
 
     public void own(Player owner) {

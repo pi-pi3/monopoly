@@ -9,6 +9,15 @@ import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.GameState;
 
 public abstract class Request {
+    public static class Show extends Request { // this is a client-side dummy request
+        private static final JSONObject req = new JSONObject("{\"request\":\"show\"}");
+        public JSONObject serializeInner() { return req; }
+        public static Show deserialize(JSONObject req) throws Exception { return new Show(); }
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
+    }
+
     public static class Ask extends Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"ask\"}");
         public JSONObject serializeInner() { return req; }

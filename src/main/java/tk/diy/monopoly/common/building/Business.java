@@ -30,6 +30,7 @@ public class Business extends Building {
         return BASE_COST;
     }
 
+    public int getStage() { return this.owner != null? 1:0; }
     public boolean canBuild() { return false; }
     public void build() {}
 

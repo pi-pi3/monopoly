@@ -131,6 +131,8 @@ public class Shell {
                 return new Request.End();
             case "move": // move
                 return new Request.Move();
+            case "show":
+                return new Request.Show();
             default:
                 throw new Exception("invalid command: " + arg0);
         }

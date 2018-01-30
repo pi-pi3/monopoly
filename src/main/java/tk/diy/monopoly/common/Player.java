@@ -174,8 +174,16 @@ public class Player {
         return this.money;
     }
 
+    public ArrayList<Building> getOwned() {
+        return this.owned;
+    }
+
     public void setJail(int jail) {
         this.jail = jail;
+    }
+
+    public int getJail() {
+        return this.jail;
     }
 
     public boolean inJail() {

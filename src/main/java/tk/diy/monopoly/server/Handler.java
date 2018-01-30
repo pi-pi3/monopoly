@@ -143,7 +143,7 @@ public class Handler implements Runnable {
                                 this.host.log(this.name(), "* canbuy *");
                                 Request.Buy buy = (Request.Buy) this.recv().req;
                                 if (buy.buy) {
-                                    building.own(this.self);
+                                    this.self.buy(building);
                                     this.host.log(this.name(), "* bought \"" + building.name() + "\" for " + cost + "€ *");
                                 }
                                 break;
