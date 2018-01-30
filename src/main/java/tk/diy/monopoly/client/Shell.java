@@ -31,13 +31,31 @@ public class Shell {
         this.quitEh = false;
     }
 
+    public boolean ask() throws IOException {
+        String ans = this.nextLine(Optional.of("")).trim().toLowerCase();
+        switch (ans) {
+            case "y":
+            case "yes":
+            case "t":
+            case "true":
+            case "1":
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public String nextLine() throws IOException {
+        return this.nextLine(this.ps1);
+    }
+
+    public String nextLine(Optional<String> ps1) throws IOException {
         if (this.quitEh) {
             return null;
         }
 
         StringBuilder line = new StringBuilder();
-        this.ps1.ifPresent((String ps1) -> System.out.print(ps1));
+        ps1.ifPresent((String ps) -> System.out.print(ps));
         boolean backslash = false;
         while (true) {
             int b = this.in.read();

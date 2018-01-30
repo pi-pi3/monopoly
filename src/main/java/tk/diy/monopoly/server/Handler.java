@@ -11,6 +11,7 @@ import tk.diy.monopoly.common.Protocol;
 import tk.diy.monopoly.common.Protocol.ProtocolRequest;
 import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.field.Field;
+import tk.diy.monopoly.common.building.Building;
 
 public class Handler implements Runnable {
     private final Server host;
@@ -137,12 +138,17 @@ public class Handler implements Runnable {
                                 // TODO
                                 break outer;
                             case CANBUY:
+                                Building building = field.getBuilding();
+                                int cost = building.cost();
                                 this.host.log(this.name(), "* canbuy *");
-                                // TODO
+                                Request.Buy buy = (Request.Buy) this.recv().req;
+                                if (buy.buy) {
+                                    building.own(this.self);
+                                    this.host.log(this.name(), "* bought \"" + building.name() + "\" for " + cost + "€ *");
+                                }
                                 break;
                             case CANBUILD:
                                 this.host.log(this.name(), "* canbuild *");
-                                // TODO
                                 break;
                             case IN_JAIL:
                                 this.host.log(this.name(), "* in_jail *");

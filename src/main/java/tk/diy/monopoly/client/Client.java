@@ -13,6 +13,7 @@ import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.Protocol;
 import tk.diy.monopoly.common.field.Field;
 import tk.diy.monopoly.common.field.Field.Visit;
+import tk.diy.monopoly.common.building.Building;
 
 public class Client extends Common implements Runnable {
     public short port;
@@ -126,12 +127,19 @@ public class Client extends Common implements Runnable {
                                 Client.say("You payed rent and went bankrupt!");
                                 break outer;
                             case CANBUY:
+                                Building building = field.getBuilding();
+                                int cost = building.cost();
                                 Client.say("Would you like to buy this building? [y/N]");
-                                // TODO
+                                Client.say("Its cost is " + cost + "€");
+                                boolean buy = sh.ask();
+                                this.send(new Request.Buy(buy));
+                                if (buy) {
+                                    building.own(this.self);
+                                    Client.say("You bought \"" + building.name() + "\" for " + cost + "€");
+                                }
                                 break;
                             case CANBUILD:
                                 Client.say("Would you like to upgrade this building? [y/N]");
-                                // TODO
                                 break;
                             case IN_JAIL:
                                 Client.say("You're still in jail. Please wait.");

@@ -21,6 +21,10 @@ public abstract class Field {
 
     public abstract String name();
 
+    public Building getBuilding() {
+        return this.building;
+    }
+
     public Visit visit(Player player) {
         Player owner = this.building.getOwner();
         if (owner == null) {

@@ -363,24 +363,21 @@ public abstract class Request {
     }
 
     public static class Build extends Request {
-        public int id;
-        public int count;
+        public int field;
 
-        public Build(int id, int count) {
-            this.id = id;
-            this.count = count;
+        public Build(int field) {
+            this.field = field;
         }
 
         public JSONObject serializeInner() {
             JSONObject req = new JSONObject();
             req.put("request", "build");
-            req.put("id", this.id);
-            req.put("count", this.count);
+            req.put("field", this.field);
             return req;
         }
 
         public static Build deserialize(JSONObject req) throws Exception {
-            return new Build(req.getInt("id"), req.getInt("count"));
+            return new Build(req.getInt("field"));
         }
 
         public boolean rootRequired() { return false; }
