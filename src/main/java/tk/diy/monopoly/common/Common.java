@@ -78,8 +78,20 @@ public class Common {
         }
     }
 
+    public synchronized Player[] players() {
+        Player[] players = new Player[this.playerOrder.size()];
+        for (int i = 0; i < this.playerOrder.size(); i++) {
+            players[i] = this.players.get(playerOrder.get(i));
+        }
+        return players;
+    }
+
     public synchronized boolean hasPlayer(Player.Color color) {
         return this.players.containsKey(color);
+    }
+
+    public synchronized int playerIndex() {
+        return this.currentPlayer;
     }
 
     public synchronized Player.Color playerColor() {

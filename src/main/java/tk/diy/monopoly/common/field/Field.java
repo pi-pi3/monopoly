@@ -18,6 +18,7 @@ public abstract class Field {
     }
 
     protected Building building;
+    protected int index;
 
     public abstract String name();
 

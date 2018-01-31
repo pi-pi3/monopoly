@@ -7,6 +7,10 @@ import tk.diy.monopoly.common.Player;
 public class StartField extends Field {
     public static final String NAME = "Start";
 
+    public StartField(int index) {
+        this.index = index;
+    }
+
     public String name() {
         return NAME;
     }

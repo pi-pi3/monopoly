@@ -5,8 +5,10 @@ import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.building.Building;
 
 public class SimpleField extends Field {
-    public SimpleField(Building building) {
+    public SimpleField(int index, Building building) {
+        this.index = index;
         this.building = building;
+        building.setIndex(this.index);
     }
 
     public String name() {

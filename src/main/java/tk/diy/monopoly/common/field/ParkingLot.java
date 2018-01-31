@@ -6,6 +6,10 @@ import tk.diy.monopoly.common.Player;
 public class ParkingLot extends Field {
     public final static String NAME = "Parking lot";
 
+    public ParkingLot(int index) {
+        this.index = index;
+    }
+
     public String name() {
         return NAME;
     }

@@ -7,6 +7,10 @@ import tk.diy.monopoly.common.Player;
 public class Jail extends Field {
     public static final String NAME = "Jail";
 
+    public Jail(int index) {
+        this.index = index;
+    }
+
     public String name() {
         return NAME;
     }

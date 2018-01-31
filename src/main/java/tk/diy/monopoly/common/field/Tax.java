@@ -7,7 +7,8 @@ public class Tax extends Field {
     private final String name;
     private final int tax;
 
-    public Tax(String name, int tax) {
+    public Tax(int index, String name, int tax) {
+        this.index = index;
         this.name = name;
         this.tax = tax;
     }
