@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import tk.diy.monopoly.common.building.Building;
 
+import tk.diy.monopoly.common.Request.AskResponse.PlayerUnit;
+
 public class Player {
     public enum Color {
         RED, GREEN, BLUE, CYAN, MAGENTA, YELLOW, ORANGE, BLACK, GREY, WHITE;
@@ -137,13 +139,24 @@ public class Player {
         this.businesses = 0;
     }
 
+    public void sync(Common game, PlayerUnit unit) {
+        this.position = unit.position;
+        this.money = unit.money;
+
+        for (int building : unit.owned) {
+            if (!this.owns(building)) {
+                this.buy(game.getBoard().get(building).getBuilding());
+            }
+        }
+    }
+
     public int position() {
         return this.position;
     }
 
     public void move(int rel) {
         this.position += rel;
-        if (this.position > Common.FIELD_COUNT) {
+        if (this.position >= Common.FIELD_COUNT) {
             this.position -= Common.FIELD_COUNT;
             this.receive(Common.BASE_CASH);
         }
@@ -175,7 +188,7 @@ public class Player {
     }
 
     public Building[] getOwned() {
-        return (Building[]) this.owned.toArray();
+        return this.owned.toArray(new Building[0]);
     }
 
     public void setJail(int jail) {
@@ -193,6 +206,16 @@ public class Player {
     public boolean doJail() {
         this.jail--;
         return this.inJail();
+    }
+
+    public boolean owns(int index) {
+        for (Building building : this.owned) {
+            if (building.index() == index) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public int getStations() {

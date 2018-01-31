@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.rand.Dice;
 
+import tk.diy.monopoly.common.Request.AskResponse.PlayerUnit;
+
 public class Common {
     public final static String VERSION = "0.1.0";
     public final static short DEFAULT_PORT = 1935;
@@ -35,6 +37,24 @@ public class Common {
         this.playerOrder = new ArrayList<Player.Color>();
         this.board = new Board();
         this.state = GameState.NOT_STARTED;
+    }
+
+    public synchronized void sync(Request.AskResponse update) {
+        this.currentPlayer = update.currentPlayer;
+
+        this.playerOrder.clear(); // this is fucking inefficient
+        for (PlayerUnit unit : update.players) {
+            Player.Color color = unit.color;
+            this.playerOrder.add(color);
+            Player player;
+            if (this.players.containsKey(color)) {
+                player = this.players.get(color);
+            } else {
+                player = new Player(color, INIT_CASH);
+                this.players.put(color, player);
+            }
+            player.sync(this, unit);
+        }
     }
 
     public synchronized Board getBoard() {

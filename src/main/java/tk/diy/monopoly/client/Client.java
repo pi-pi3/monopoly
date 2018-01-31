@@ -94,9 +94,12 @@ public class Client extends Common implements Runnable {
                     continue;
                 }
 
-                this.send(new Request.Ask()); // this is a hack that updates... look for XXX in Handler.java
-                // basically now every communication attempt starts with an ask
-                // request which updates the handler
+                if (this.send(new Request.Ask()) instanceof Request.Acknowledge) {
+                    Request.AskResponse update = (Request.AskResponse) this.recv();
+                    this.sync(update);
+                } else {
+                    throw new Exception("couldn't sync");
+                }
                 Request resp = this.send(req);
 
                 if (resp instanceof Request.Acknowledge) {

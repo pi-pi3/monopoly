@@ -32,21 +32,24 @@ public abstract class Request {
     public static class AskResponse extends Request {
         // minified, serializable version of the player
         public static class PlayerUnit {
+            public Player.Color color;
             public int position;
             public int money;
             public int[] owned; // fields owned
 
             public JSONObject serialize() {
                 JSONObject req = new JSONObject();
+                req.put("color", this.color.toInt());
                 req.put("position", this.position);
                 req.put("money", this.money);
                 req.put("owned", this.owned);
                 return req;
             }
 
-            public static PlayerUnit deserialize(JSONObject obj) {
+            public static PlayerUnit deserialize(JSONObject obj) throws Exception {
                 PlayerUnit unit = new PlayerUnit();
 
+                unit.color = Player.Color.fromInt(obj.getInt("color"));
                 unit.position = obj.getInt("position");
                 unit.money = obj.getInt("money");
                 JSONArray owned = obj.getJSONArray("owned");
@@ -73,6 +76,7 @@ public abstract class Request {
                 Player player = players[i];
 
                 this.players[i] = new PlayerUnit();
+                this.players[i].color = player.color;
                 this.players[i].position = player.position();
                 this.players[i].money = player.getCash();
 
@@ -93,6 +97,7 @@ public abstract class Request {
             for (int i = 0; i < players.length; i++) {
                 players[i] = this.players[i].serialize();
             }
+            req.put("players", players);
 
             return req;
         }

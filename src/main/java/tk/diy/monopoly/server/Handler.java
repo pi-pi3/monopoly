@@ -67,6 +67,9 @@ public class Handler implements Runnable {
                 Request ans = tmp.ans;
 
                 if (req instanceof Request.Ask) {
+                    synchronized (this.host) {
+                        this.send(new Request.AskResponse(this.host));
+                    }
                     continue;
                 }
 
