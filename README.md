@@ -66,4 +66,4 @@ version control, etc.
 ## HS Emden/Leer
 
 This game was completed as my Java 101 assignment at my University, the
-University of Applied Sciences Emden/Leer.
+University of Applied Sciences Emden/Leer and turned in on the 31st January.
