@@ -4,9 +4,11 @@ package tk.diy.monopoly.common;
 import java.util.HashMap;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import tk.diy.monopoly.common.Player;
 import tk.diy.monopoly.common.GameState;
+import tk.diy.monopoly.common.building.Building;
 
 public abstract class Request {
     public static class Show extends Request { // this is a client-side dummy request
@@ -22,6 +24,92 @@ public abstract class Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"ask\"}");
         public JSONObject serializeInner() { return req; }
         public static Ask deserialize(JSONObject req) throws Exception { return new Ask(); }
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
+    }
+
+    public static class AskResponse extends Request {
+        // minified, serializable version of the player
+        public static class PlayerUnit {
+            public int position;
+            public int money;
+            public int[] owned; // fields owned
+
+            public JSONObject serialize() {
+                JSONObject req = new JSONObject();
+                req.put("position", this.position);
+                req.put("money", this.money);
+                req.put("owned", this.owned);
+                return req;
+            }
+
+            public static PlayerUnit deserialize(JSONObject obj) {
+                PlayerUnit unit = new PlayerUnit();
+
+                unit.position = obj.getInt("position");
+                unit.money = obj.getInt("money");
+                JSONArray owned = obj.getJSONArray("owned");
+                unit.owned = new int[owned.length()];
+                for (int i = 0; i < unit.owned.length; i++) {
+                    unit.owned[i] = owned.getInt(i);
+                }
+
+                return unit;
+            }
+        }
+
+        public int currentPlayer;
+        public PlayerUnit[] players;
+
+        private AskResponse() {}
+
+        public AskResponse(Common game) {
+            this.currentPlayer = game.playerIndex();
+
+            Player[] players = game.players();
+            this.players = new PlayerUnit[players.length];
+            for (int i = 0; i < players.length; i++) {
+                Player player = players[i];
+
+                this.players[i] = new PlayerUnit();
+                this.players[i].position = player.position();
+                this.players[i].money = player.getCash();
+
+                Building[] owned = player.getOwned();
+                this.players[i].owned = new int[owned.length];
+                for (int j = 0; j < owned.length; j++) {
+                    this.players[i].owned[j] = owned[j].index();
+                }
+            }
+        }
+
+        public JSONObject serializeInner() {
+            JSONObject req = new JSONObject();
+
+            req.put("request", "ask-response");
+            req.put("current-player", this.currentPlayer);
+            JSONObject[] players = new JSONObject[this.players.length];
+            for (int i = 0; i < players.length; i++) {
+                players[i] = this.players[i].serialize();
+            }
+
+            return req;
+        }
+
+        public static AskResponse deserialize(JSONObject obj) throws Exception {
+            AskResponse req = new AskResponse();
+
+            req.currentPlayer = obj.getInt("current-player");
+            JSONArray players = obj.getJSONArray("players");
+            req.players = new PlayerUnit[players.length()];
+            for (int i = 0; i < req.players.length; i++) {
+                req.players[i] = PlayerUnit.deserialize(players.getJSONObject(i));
+            }
+
+            return req;
+        }
+
         public boolean rootRequired() { return false; }
         public boolean turnRequired() { return false; }
         public GameState stateRequired() { return GameState.NONE; }
@@ -417,6 +505,8 @@ public abstract class Request {
             return EchoResponse.deserialize(data);
         } else if (request.equals("ask")) {
             return Ask.deserialize(data);
+        } else if (request.equals("ask-response")) {
+            return AskResponse.deserialize(data);
         } else if (request.equals("ack")) {
             return Acknowledge.deserialize(data);
         } else if (request.equals("access-denied")) {
