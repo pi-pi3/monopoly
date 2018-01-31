@@ -68,10 +68,10 @@ public class Client extends Common implements Runnable {
                         if (this.self.inJail()) {
                             System.out.println("You're now in jail for another " + this.self.getJail() + " rounds.");
                         }
-                        ArrayList<Building> owned = this.self.getOwned();
+                        Building[] owned = this.self.getOwned();
                         System.out.println(" * Owned buildings");
-                        for (int i = 0; i < owned.size(); i++) {
-                            Building building = owned.get(i);
+                        for (int i = 0; i < owned.length; i++) {
+                            Building building = owned[i];
                             System.out.println(" #" + i + ": " + building.name());
                             System.out.println("  Current rent: " + building.rent() + '€');
                             int stage = building.getStage();

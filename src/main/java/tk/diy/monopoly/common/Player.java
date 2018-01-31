@@ -174,8 +174,8 @@ public class Player {
         return this.money;
     }
 
-    public ArrayList<Building> getOwned() {
-        return this.owned;
+    public Building[] getOwned() {
+        return (Building[]) this.owned.toArray();
     }
 
     public void setJail(int jail) {
