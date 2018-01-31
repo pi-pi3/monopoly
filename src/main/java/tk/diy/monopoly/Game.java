@@ -19,7 +19,7 @@ public class Game {
                                           "  -h | --help           Prints this message and quits.\n" +
                                           "  -v | --version        Prints version and quits.\n\n" +
                                           "CREDITS & LICENSE\n" +
-                                          "  Made by Szymon Walter.\n" +
+                                          "  Made by Szymon Walter as an assignment for HS Emden/Leer.\n" +
                                           "  This program is free software available under the zlib/libpng license.\n" +
                                           "  https://github.com/pi-pi3/monopoly";
 
