@@ -127,6 +127,7 @@ public class Client extends Common implements Runnable {
                     continue;
                 } else if (req instanceof Request.Help) {
                     Client.say(HELP_MSG_ROOT); // client doesn't really know if it's root or not...
+                    continue;
                 }
 
                 if (this.send(new Request.Ask()) instanceof Request.Acknowledge) {
