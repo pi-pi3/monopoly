@@ -17,6 +17,38 @@ import tk.diy.monopoly.common.field.Field.Visit;
 import tk.diy.monopoly.common.building.Building;
 
 public class Client extends Common implements Runnable {
+    public static final String INIT_MSG = ">> type \"help\" for help and other useful information";
+                                         // << ................................................................................ >>
+    public static final String HELP_MSG_ROOT = "This game is controlled with a very minimal shell.\n" +
+                                               "Specialized commands are used for different actions.\n" +
+                                               "Available commands: \n\n" +
+                                               "  echo [message...]         Sends a message to server and shows latency.\n" +
+                                               "  disconnect                Disconnects from server.\n" +
+                                               "  shutdown (requires root)  Shuts down the server.\n" +
+                                               "  join <color>              Joins the game with the specified color.\n" +
+                                               "  start (requires root)     Starts game.\n" +
+                                               "  end (requires root)       Ends game.\n" +
+                                               "  move                      Throws dice and moves.\n" +
+                                               "  show                      Shows status and profile.\n" +
+                                               "  help                      Shows this message.\n\n" +
+                                               "Available colors:\n\n" +
+                                               "  red\n  green\n  blue\n  cyan\n  magenta\n  yellow\n  orange\n  black\n  grey\n  white\n\n";
+                                     // << ................................................................................ >>
+    public static final String HELP_MSG = "This game is controlled with a very minimal shell.\n" +
+                                          "Specialized commands are used for different actions.\n" +
+                                          "Available commands: \n\n" +
+                                          "  echo [message...]         Sends a message to server and shows latency.\n" +
+                                          "  disconnect                Disconnects from server.\n" +
+                                          "  shutdown (requires root)  Shuts down the server.\n" +
+                                          "  join <color>              Joins the game with the specified color.\n" +
+                                          "  start (requires root)     Starts game.\n" +
+                                          "  end (requires root)       Ends game.\n" +
+                                          "  move                      Throws dice and moves.\n" +
+                                          "  show                      Shows status and profile.\n" +
+                                          "  help                      Shows this message.\n\n" +
+                                          "Available colors:\n\n" +
+                                          "  red\n  green\n  blue\n  cyan\n  magenta\n  yellow\n  orange\n  black\n  grey\n  white\n\n";
+
     public short port;
     public String host;
     public int resendLimit;
@@ -53,6 +85,7 @@ public class Client extends Common implements Runnable {
             this.protocol = new Protocol(in, out, resendLimit);
 
             Shell sh = new Shell("> ", System.in, false);
+            Client.say(INIT_MSG);
 
             outer:
             while (!sh.quitEh()) {
@@ -92,6 +125,8 @@ public class Client extends Common implements Runnable {
                         Client.warn("Cannot do that. The game has not started yet.");
                     }
                     continue;
+                } else if (req instanceof Request.Help) {
+                    Client.say(HELP_MSG_ROOT); // client doesn't really know if it's root or not...
                 }
 
                 if (this.send(new Request.Ask()) instanceof Request.Acknowledge) {

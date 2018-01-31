@@ -110,7 +110,7 @@ public class Shell {
             case "echo": // echo [message...]
                 String message = String.join(" ", argv);
                 return new Request.Echo(message);
-            case "disconnect": // disconnect (requires root)
+            case "disconnect": // disconnect
                 return new Request.Disconnect();
             case "shutdown": // shutdown (requires root)
                 return new Request.Shutdown();
@@ -131,8 +131,10 @@ public class Shell {
                 return new Request.End();
             case "move": // move
                 return new Request.Move();
-            case "show":
+            case "show": // show
                 return new Request.Show();
+            case "help": // help
+                return new Request.Help();
             default:
                 throw new Exception("invalid command: " + arg0);
         }

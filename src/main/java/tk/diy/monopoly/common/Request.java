@@ -20,6 +20,15 @@ public abstract class Request {
         public GameState stateRequired() { return GameState.NONE; }
     }
 
+    public static class Help extends Request { // this is a client-side dummy request
+        private static final JSONObject req = new JSONObject("{\"request\":\"help\"}");
+        public JSONObject serializeInner() { return req; }
+        public static Help deserialize(JSONObject req) throws Exception { return new Help(); }
+        public boolean rootRequired() { return false; }
+        public boolean turnRequired() { return false; }
+        public GameState stateRequired() { return GameState.NONE; }
+    }
+
     public static class Ask extends Request {
         private static final JSONObject req = new JSONObject("{\"request\":\"ask\"}");
         public JSONObject serializeInner() { return req; }
