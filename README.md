@@ -4,6 +4,12 @@ This is more like a proof-of-concept. It is a functional Monopoly-type game
 (with very little of original rules missing), but it does lack real-time
 server --- client updates. Syncing is done with a sort-of cheaty way.
 
+## Quickstart guide
+Build the executable jar with `make` or `./gradlew shadowJar`.
+Run `cp build/libs/monopoly-all.jar monopoly.jar` for convenience.
+Run `java -jar monopoly.jar --server` to start a server on localhost. Then run any
+number of clients with `java -jar monopoly.jar`.
+
 ## Monopoly Protocol
 The server/client implementation includes a simple TCP/IP based protocol.  It
 uses port 1935 (year of original publication of Monopoly) by default.  Requests
